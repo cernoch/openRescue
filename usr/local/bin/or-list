@@ -1,0 +1,28 @@
+#!/bin/bash
+. or-libs
+
+# Given a device path, finds its label
+function resolve_label() {
+  DEVICE="$1"
+  ls /dev/disk/by-label/ | while read LABEL; do
+    TMP=`readlink -f "/dev/disk/by-label/$LABEL"`
+    if [ "$TMP" = "$DEVICE" ]; then
+      echo "$LABEL"
+      return
+    fi
+  done
+}
+
+ls /dev/disk/by-uuid/ | grep "^$1" | sort | while read UUID; do
+  # Resolve symlink to the device path.
+  DEV=`readlink -f "/dev/disk/by-uuid/$UUID"`
+
+  # Device's default name = name of the file in /dev/
+  NAME=`echo "$DEV" | sed 's-^/dev/--' | sed 's-^mapper/--'`
+
+  # If the device has a label present, use it !
+  LABEL=`resolve_label "$DEV"`
+  [[ -n "$LABEL" ]] && NAME="$LABEL"
+
+  echo "$UUID" "$NAME" "$DEV"
+done

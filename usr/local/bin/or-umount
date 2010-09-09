@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+  echo "name of the mount not given"
+  exit 1
+fi
+
+NAME="$1"
+if [ ! -d "/mnt/$NAME" ]; then
+  echo "mount name does not exist"
+  exit 1
+fi
+
+sudo umount "/mnt/$NAME" > /dev/null 2>&1
+sudo rmdir "/mnt/$NAME" || { echo "system error"; exit 1; }

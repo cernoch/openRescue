@@ -1,0 +1,66 @@
+#!/bin/bash
+
+function savechars() {
+	sed "s/ /_/g"              | \
+	sed 's/&/_and_/g'          | \
+	sed 's/;/-/g'              | \
+	sed 's/-_/-/g'             | \
+	sed 's/_-/-/g'             | \
+	sed 's/_$//g'              | \
+	sed 's/__/_/g'
+}
+
+function anglicize() {
+	sed 's/ě/e/g' | \
+	sed 's/š/s/g' | \
+	sed 's/č/c/g' | \
+	sed 's/ř/r/g' | \
+	sed 's/ž/z/g' | \
+	sed 's/ý/y/g' | \
+	sed 's/á/a/g' | \
+	sed 's/í/i/g' | \
+	sed 's/é/e/g' | \
+	sed 's/ť/t/g' | \
+	sed 's/ů/u/g' | \
+	sed 's/ó/o/g' | \
+	sed 's/ď/d/g' | \
+	sed 's/ň/n/g' | \
+	sed 's/ê/e/g' | \
+	sed 's/è/e/g' | \
+	sed 's/ì/i/g' | \
+	sed 's/ù/u/g' | \
+	sed 's/ç/c/g'
+}
+
+function remnonascii() {
+	sed 's-[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST1234567890_]--g'
+}
+
+function urlfriendly() {
+	awk '{print tolower($0)}' | \
+	anglicize | savechars | remnonascii | \
+	sed 's-^_*--' | sed 's-_*$--'
+}
+
+# Prints all mounted devices and loop-backed files
+function mount-devices() {
+  # Print direct mounts
+  mount | sed 's- .*--' | grep '^/' | grep -v '^/dev/loop[0-9]*'
+  # Print files mounted over loop-back
+  sudo losetup -a | sed "s|.* (\(.*\))|\1|g"
+}
+
+# Prints mount-points for devices passed as "$1"
+function mount-get-mountpoint-direct() {
+  while read L; do
+    mount | grep "^$L" | sed "s|^.* on \(.*\) type .* (.*)$|\1|"
+  done
+}
+
+function mount-mpoint() {
+  {
+    echo "$1"
+    sudo losetup -a | grep " ($1)$" | sed "s|^\([^:]*\):.*|\1|"
+  } | mount-get-mountpoint-direct | grep '.*'
+}
+

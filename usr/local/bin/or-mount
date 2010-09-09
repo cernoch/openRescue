@@ -1,0 +1,44 @@
+#!/bin/bash
+. or-libs
+
+# If no parameters supplied, list all mount names
+if [ "$#" -eq 0 ]; then
+  ls -1 /mnt
+  exit
+fi
+
+DEV="$1"
+
+if [ ! -b "$DEV" -a ! -f "$DEV" -a ! -d "$DEV" ]; then
+  echo "Supplied path is neither a block device nor a regular file nor a directory."
+  exit 1
+fi
+
+# If mounted, print the mount-point and exit silently
+if [ "`mount-mpoint \"$DEV\" | grep '^/mnt/' | wc -l`" -ge 1 ]; then
+  mount-mpoint "$DEV" | sed 's-^/mnt/--'
+  exit
+fi
+
+# Try to guess the name from or-list (if truly a device path)
+NAME=`or-list | grep " $DEV$" | sed "s-.* \([^ ]*\) .*-\1-"`
+# If not successful, guess from the filename by stripping path and extension
+[[ -n "$NAME" ]] || NAME=`echo "$DEV" | sed 's-.*/--' | sed 's-\.[a-z]\{0,3\}$--' | urlfriendly`
+# If still not successful, guess from the full file-path
+[[ -n "$NAME" ]] || NAME=`echo "$DEV" | urlfriendly`
+
+# Crop the name by 25 characters
+NAME="`echo \"$NAME\" | sed 's-.*\(.\{25\}\)-\1-'`"
+
+# If the name already exists, find a free one
+I=
+while [ -e "/mnt/${NAME}${I}" ]; do I=$(( $I + 1 )); done
+NAME="${NAME}${I}"
+
+INJECT=
+[[ -f "$DEV" ]] && INJECT="-o loop"
+[[ -d "$DEV" ]] && INJECT="-o bind"
+
+sudo mkdir "/mnt/$NAME" || exit 1
+sudo mount $INJECT "$DEV" "/mnt/$NAME" || { sudo rmdir "/mnt/$NAME"; exit 1; }
+echo "$NAME"

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ "$#" -eq "0" ]; then
+  echo "device path not supplied"
+  exit 1
+fi
+
+DEV="$1"
+
+if [ -f "$DEV" ]; then
+  stat -c%s "$DEV"
+  exit
+fi
+
+if [ -d "$DEV" ]; then
+  df -B 1 "$DEV" | grep -v '^Filesystem' | awk '{print($2)}'
+  exit
+fi
+
+if [ -b "$DEV" ]; then
+  UDI="`hal-find-by-property --key block.device --string \"$DEV\"`"
+  hal-get-property --udi "$UDI" --key volume.size
+  exit
+fi
