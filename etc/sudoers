@@ -1,0 +1,4 @@
+root     ALL = (ALL) ALL
+%sudo    ALL = (ALL) ALL
+www-data ALL = (root) NOPASSWD: /usr/local/sbin/or-list
+
