@@ -1,0 +1,16 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+X-SuSE-translate=true
+Encoding=UTF-8
+Name=Chromium
+GenericName=Web Browser
+Comment=Google's opens source web browser
+Exec=chromium %u
+Terminal=false
+Icon=chromium
+Type=Application
+Categories=Application;Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml_xml;
+StartupWMClass=Chromium
+StartupNotify=true
+

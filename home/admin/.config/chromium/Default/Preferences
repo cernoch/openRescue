@@ -1,0 +1,61 @@
+{
+   "bookmark_bar": {
+      "show_on_all_tabs": false
+   },
+   "browser": {
+      "check_default_browser": false,
+      "show_home_button": true
+   },
+   "countryid_at_install": 21843,
+   "default_search_provider": {
+      "id": "2",
+      "name": "Google",
+      "prepopulate_id": "1",
+      "search_url": "{google:baseURL}search?{google:RLZ}{google:acceptedSuggestion}{google:originalQueryForSuggestion}sourceid=chrome&ie={inputEncoding}&q={searchTerms}",
+      "suggest_url": "{google:baseSuggestURL}search?client=chrome&hl={language}&q={searchTerms}"
+   },
+   "distribution": {
+      "alternate_shortcut_text": false,
+      "chrome_shortcut_icon_index": 0,
+      "create_all_shortcuts": true,
+      "import_bookmarks_from_file": "/etc/chromium/default_bookmarks.html",
+      "make_chrome_default": false,
+      "make_chrome_default_for_user": false,
+      "oem_bubble": true,
+      "show_welcome_page": true,
+      "skip_first_run_ui": true,
+      "system_level": false,
+      "verbose_logging": false
+   },
+   "download": {
+      "directory_upgrade": true,
+      "extensions_to_open": "ymp"
+   },
+   "extensions": {
+      "autoupdate": {
+         "next_check": "12928551685549431"
+      },
+      "chrome_url_overrides": {
+         "bookmarks": [ "chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/main.html" ]
+      }
+   },
+   "first_run_tabs": [ "http://www.opensuse.org", "http://tools.google.com/chrome/intl/en/welcome.html" ],
+   "homepage": "http://localhost/",
+   "homepage_is_newtabpage": false,
+   "ntp": {
+      "pref_version": 2,
+      "shown_sections": 93
+   },
+   "plugins": {
+      "enabled_internal_pdf": true
+   },
+   "profile": {
+      "content_settings": {
+         "pref_version": 1
+      },
+      "exited_cleanly": true
+   },
+   "tabs": {
+      "use_vertical_tabs": false
+   }
+}
