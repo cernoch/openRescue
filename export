@@ -1,5 +1,5 @@
 #!/bin/bash
-VER=`git tag | head -1 | sed 's-^v--'`
+VER=`git tag | tail -1 | sed 's-^v--'`
 rm -f "openRescue-$VER.tar.bz2"
 tar -cvf "openRescue-$VER.tar" --owner=root --group=root usr
 tar -cvf "openRescue-$VER-home.tar" --numeric-owner --owner=1000 --group=1000 home
