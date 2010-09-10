@@ -1,7 +1,7 @@
 <?php
 header('Cache-Control: no-cache, must-revalidate');
 
-$retval = exec("sudo or-list", $results);
+exec("sudo or-list", $results, $retval);
 
 if ($retval != 0) {
 	header("x", true, 500);

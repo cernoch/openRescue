@@ -11,7 +11,7 @@ if ($data == null) {
 }
 
 $command = "sudo or-umount \"".escapeshellcmd($data->name)."\"";
-$retval = exec($command, $results);
+exec($command, $results, $retval);
 
 if ($retval != 0) {
 	header("x", true, 500);

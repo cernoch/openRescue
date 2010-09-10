@@ -28,6 +28,9 @@
   # File-sytem lookup
   FSYS="`sudo blkid -o udev \"$DEV\" | grep '^ID_FS_TYPE=' | sed 's/^ID_FS_TYPE=//'`"
   [[ -n "$FSYS" ]] || FSYS='?'
+  [[ "$FSYS" = "swap" ]] && continue
+  [[ "$FSYS" = "LVM2_member" ]] && continue
+
 
   # Resolve mounted images to the true file
   if [ `echo "$DEV" | grep '^/dev/loop' | wc -l` -ge 1 ]; then
@@ -58,9 +61,11 @@ mount | grep " on /mnt/[$ALLOWED_CHARS]\+ type [a-z0-9\_.]\+ (.*)$" | while read
 
   # Determine the true device-path from df
   TDEV="`sudo df \"$DEV\" | grep -v '^Filesystem' | sed 's- .*--'`"
+  # TODO: This method is not working for btrfs subvolumes
+
   FSYS="`sudo blkid -o udev \"$TDEV\" | grep '^ID_FS_TYPE=' | sed 's/^ID_FS_TYPE=//'`"  
   [[ "$FSYS" ]] || FSYS='?'
-  # TODO: This method is not working for btrfs subvolumes
+
 
   # Already mounted -> name is well-defined
   NAME="`echo \"$LINE\" | sed \"s|.* on /mnt/\([$ALLOWED_CHARS]\+\) type [a-z0-9\_.]\+ (.*)$|\1|\"`"

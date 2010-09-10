@@ -21,11 +21,11 @@ if [ "`mount-mpoint \"$DEV\" | wc -l`" -ge 1 ]; then
 fi
 
 # Try to guess the name from or-list (if truly a device path)
-NAME=`or-list | grep " $DEV$" | sed "s-.* \([^ ]*\) .*-\1-"`
+NAME=`or-list | grep "$DEV$" | sed "s-	.*--"`
 # If not successful, guess from the filename by stripping path and extension
-[[ -n "$NAME" ]] || NAME=`echo "$DEV" | sed 's-.*/--' | sed 's-\.[a-z]\{0,3\}$--' | urlfriendly`
+[[ "$NAME" ]] || NAME=`echo "$DEV" | sed 's-.*/--' | sed 's-\.[a-z]\{0,3\}$--' | urlfriendly`
 # If still not successful, guess from the full file-path
-[[ -n "$NAME" ]] || NAME=`echo "$DEV" | urlfriendly`
+[[ "$NAME" ]] || NAME=`echo "$DEV" | urlfriendly`
 
 # Crop the name by 20 characters
 NAME="`echo \"$NAME\" | sed 's-.*\(.\{20\}\)-\1-'`"
