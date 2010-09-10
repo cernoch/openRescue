@@ -109,10 +109,7 @@
 
 <script type="text/javascript">
 
-	$.ajaxSetup({
-		dataType : "json",
-		type : "GET"
-	});
+	$.ajaxSetup({dataType:"json"});
 
 	$("body").ajaxStart(function() {
 		$("#status").text("AJAXING");
@@ -124,7 +121,12 @@
 
 	$("body").ajaxError(function(evt, data, opts, thrown) {
 		$d = $("body").append("<div></div>").children(":last");
-		$d.html("<p>Server returned</p><pre></pre>").children("pre").text(data.responseText);
+		
+		$d.html("<div class='ui-widget'><div class='ui-state-error ui-corner-all'>" 
+				+"<p><span class='ui-icon ui-icon-alert'></span>" 
+				+"<strong>Alert:</strong> Something went wrong. The requested action"
+				+" was not been performed.</p>"
+				+"</div></div><p>Server resonse:</p><pre></pre>").children("pre").text(data.responseText);
 		$d.dialog({
 			title : data.statusText,
 			width : "70%",
@@ -180,6 +182,24 @@
 					$info.append("<tr><td class='devPath'/></tr>").children(":last").children(":last").children(":last").text(i);
 					$info.append("<tr><td class='defFsys'/></tr>").children(":last").children(":last").children(":last").text(humanSize(data[i].size) + ", " + data[i].fsys);
 				}
+				
+				$(".devStat", $view).css("text-decoration", "underline").css("cursor", "pointer").click(function() {
+						
+					var $dev = $(this).parents(".device");
+					var path = $(".devPath", $dev).text();
+					var name = $(".devName", $dev).text();
+					var line = $(".devStat", $dev).text() == "Online";
+					
+					$.ajax({ type:"PUT",
+						url: line ? "api/umount.php" : "api/mount.php",
+						data: $.toJSON({"path":path, "name":name}),
+						success : function(data) {
+							//alert($.toJSON(data));
+							reloadDevices();
+						}
+					});
+				});
+				
 			}
 		});
 	};

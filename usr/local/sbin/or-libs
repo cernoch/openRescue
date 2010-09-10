@@ -55,10 +55,11 @@ function mount-devices() {
 # Prints mount-points for devices passed as "$1"
 function mount-get-mountpoint-direct() {
   while read L; do
-    mount | grep "^$L" | sed "s|^.* on \(.*\) type .* (.*)$|\1|"
+    mount | grep "^$L on /mnt/[$ALLOWED_CHARS]\+ type .* (.*)$" | sed "s|^.* on /mnt/\([$ALLOWED_CHARS]\+\) type .* (.*)$|\1|"
   done
 }
 
+# Prints mount-point for the given device
 function mount-mpoint() {
   {
     echo "$1"

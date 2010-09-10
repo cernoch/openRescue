@@ -1,26 +1,6 @@
 #!/bin/bash
 . or-libs
 
-
-if [ -f "$DEV" ]; then
-  stat -c%s "$DEV"
-  exit
-fi
-
-if [ -d "$DEV" ]; then
-  df -B 1 "$DEV" | grep -v '^Filesystem' | awk '{print($2)}'
-  exit
-fi
-
-if [ -b "$DEV" ]; then
-  UDI="`hal-find-by-property --key block.device --string \"$DEV\"`"
-  hal-get-property --udi "$UDI" --key volume.size
-  exit
-fi
-
-
-
-
 { # For each unique UUID, find the DEVICE path
   sudo blkid -o udev | grep '^ID_FS_UUID=' | sort -u | sed 's/^ID_FS_UUID=//' | while read UUID; do
     sudo blkid -U "$UUID"
@@ -36,7 +16,7 @@ fi
   if [ `mount | grep "^$DEV " | grep " on /mnt/[$ALLOWED_CHARS]\+ type " | wc -l` -ge 1 ]; then
     STAT=mounted
     # read NAME from dir's name
-    NAME="`mount | grep \"^$DEV \" | sed \"s|.* on /mnt/\([$ALLOWED_CHARS]\+\) type [a-z0-9\_.]\+ (.*)$|\1|\"`"
+    NAME="`mount | grep \"^$DEV on /mnt/[$ALLOWED_CHARS]\+ type [a-z0-9\_.]\+ (.*)\" | sed \"s|.* on /mnt/\([$ALLOWED_CHARS]\+\) type [a-z0-9\_.]\+ (.*)$|\1|\"`"
     [[ -n "$NAME" ]] || continue # Just if something goes wrong
   else
     # NAME from device label
@@ -77,8 +57,10 @@ mount | grep " on /mnt/[$ALLOWED_CHARS]\+ type [a-z0-9\_.]\+ (.*)$" | while read
   [[ -d "$DEV" ]] || continue
 
   # Determine the true device-path from df
-  TDEV="`df \"$DEV\" | grep -v '^Filesystem' | sed 's- .*--'`"
+  TDEV="`sudo df \"$DEV\" | grep -v '^Filesystem' | sed 's- .*--'`"
   FSYS="`sudo blkid -o udev \"$TDEV\" | grep '^ID_FS_TYPE=' | sed 's/^ID_FS_TYPE=//'`"  
+  [[ "$FSYS" ]] || FSYS='?'
+  # TODO: This method is not working for btrfs subvolumes
 
   # Already mounted -> name is well-defined
   NAME="`echo \"$LINE\" | sed \"s|.* on /mnt/\([$ALLOWED_CHARS]\+\) type [a-z0-9\_.]\+ (.*)$|\1|\"`"

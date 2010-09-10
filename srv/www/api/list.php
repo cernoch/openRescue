@@ -1,13 +1,11 @@
 <?php
-
-
 header('Cache-Control: no-cache, must-revalidate');
-header('Content-type: application/json');
 
 $retval = exec("sudo or-list", $results);
 
 if ($retval != 0) {
 	header("x", true, 500);
+	header('Content-type: text/plain');
 	echo implode("\n", $results);
 	die;
 }
@@ -24,9 +22,6 @@ foreach ($results as $i => $row)
 		"size" => $tmp[4]);
 }
 
-
-
-
+header('Content-type: application/json');
 echo json_encode($out);
-
 ?>

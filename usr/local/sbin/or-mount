@@ -15,8 +15,8 @@ if [ ! -b "$DEV" -a ! -f "$DEV" -a ! -d "$DEV" ]; then
 fi
 
 # If mounted, print the mount-point and exit silently
-if [ "`mount-mpoint \"$DEV\" | grep '^/mnt/' | wc -l`" -ge 1 ]; then
-  mount-mpoint "$DEV" | sed 's-^/mnt/--'
+if [ "`mount-mpoint \"$DEV\" | wc -l`" -ge 1 ]; then
+  mount-mpoint "$DEV"
   exit
 fi
 
@@ -27,18 +27,18 @@ NAME=`or-list | grep " $DEV$" | sed "s-.* \([^ ]*\) .*-\1-"`
 # If still not successful, guess from the full file-path
 [[ -n "$NAME" ]] || NAME=`echo "$DEV" | urlfriendly`
 
-# Crop the name by 25 characters
-NAME="`echo \"$NAME\" | sed 's-.*\(.\{25\}\)-\1-'`"
+# Crop the name by 20 characters
+NAME="`echo \"$NAME\" | sed 's-.*\(.\{20\}\)-\1-'`"
 
 # If the name already exists, find a free one
 I=
 while [ -e "/mnt/${NAME}${I}" ]; do I=$(( $I + 1 )); done
 NAME="${NAME}${I}"
 
-INJECT=
+INJECT=""
 [[ -f "$DEV" ]] && INJECT="-o loop"
 [[ -d "$DEV" ]] && INJECT="-o bind"
 
 sudo mkdir "/mnt/$NAME" || exit 1
-sudo mount $INJECT "$DEV" "/mnt/$NAME" || { sudo rmdir "/mnt/$NAME"; exit 1; }
+sudo mount $INJECT "$DEV" "/mnt/$NAME" 2>&1 || { sudo rmdir "/mnt/$NAME"; exit 1; }
 echo "$NAME"
