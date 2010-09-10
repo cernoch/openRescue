@@ -1,0 +1,91 @@
+#!/bin/bash
+. or-libs
+
+
+if [ -f "$DEV" ]; then
+  stat -c%s "$DEV"
+  exit
+fi
+
+if [ -d "$DEV" ]; then
+  df -B 1 "$DEV" | grep -v '^Filesystem' | awk '{print($2)}'
+  exit
+fi
+
+if [ -b "$DEV" ]; then
+  UDI="`hal-find-by-property --key block.device --string \"$DEV\"`"
+  hal-get-property --udi "$UDI" --key volume.size
+  exit
+fi
+
+
+
+
+{ # For each unique UUID, find the DEVICE path
+  sudo blkid -o udev | grep '^ID_FS_UUID=' | sort -u | sed 's/^ID_FS_UUID=//' | while read UUID; do
+    sudo blkid -U "$UUID"
+  done
+  # and add all devices without UUID:
+  sudo blkid | grep -v 'UUID=' | sed 's-: .*--'
+
+} | sort -u | while read DEV; do
+
+  TYPE=drive
+  STAT=offline
+  # mounted?
+  if [ `mount | grep "^$DEV " | grep " on /mnt/[$ALLOWED_CHARS]\+ type " | wc -l` -ge 1 ]; then
+    STAT=mounted
+    # read NAME from dir's name
+    NAME="`mount | grep \"^$DEV \" | sed \"s|.* on /mnt/\([$ALLOWED_CHARS]\+\) type [a-z0-9\_.]\+ (.*)$|\1|\"`"
+    [[ -n "$NAME" ]] || continue # Just if something goes wrong
+  else
+    # NAME from device label
+    NAME="`sudo blkid -o udev \"$DEV\" | grep '^ID_FS_LABEL=' | sed 's/^ID_FS_LABEL=//'`"
+    # guess the NAME
+    [[ -n "$NAME" ]] || NAME="`echo \"$DEV\" | sed 's-^/dev/--' | sed 's-^mapper/--'`"
+  fi
+
+  # File-sytem lookup
+  FSYS="`sudo blkid -o udev \"$DEV\" | grep '^ID_FS_TYPE=' | sed 's/^ID_FS_TYPE=//'`"
+  [[ -n "$FSYS" ]] || FSYS='?'
+
+  # Resolve mounted images to the true file
+  if [ `echo "$DEV" | grep '^/dev/loop' | wc -l` -ge 1 ]; then
+    [[ "$STAT" = mounted ]] || continue;
+    DEV="`sudo losetup -a  | grep \"^$DEV\" | sed 's-.* (\(.*\))$-\1-'`"
+    [[ -n "$DEV" ]] || continue;
+    TYPE=image
+    SIZE=`stat -c%s "$DEV"`
+  else
+    SIZE=
+    UDI="`hal-find-by-property --key block.device --string \"$DEV\"`"
+    [[ "$UDI" ]] && SIZE=`hal-get-property --udi "$UDI" --key volume.size`
+  fi
+  [[ "$SIZE" ]] || SIZE='?'
+
+  echo "$NAME	$TYPE	$FSYS	$STAT	$SIZE	$DEV"
+done
+
+# List all "bind"-ed directories
+mount | grep " on /mnt/[$ALLOWED_CHARS]\+ type [a-z0-9\_.]\+ (.*)$" | while read LINE; do
+
+  TYPE=dir
+  STAT=mounted
+
+  DEV="`echo \"$LINE\" | sed \"s| on /mnt/[$ALLOWED_CHARS]\+ type [a-z0-9\_.]\+ (.*)$||\"`"
+  # Directories only
+  [[ -d "$DEV" ]] || continue
+
+  # Determine the true device-path from df
+  TDEV="`df \"$DEV\" | grep -v '^Filesystem' | sed 's- .*--'`"
+  FSYS="`sudo blkid -o udev \"$TDEV\" | grep '^ID_FS_TYPE=' | sed 's/^ID_FS_TYPE=//'`"  
+
+  # Already mounted -> name is well-defined
+  NAME="`echo \"$LINE\" | sed \"s|.* on /mnt/\([$ALLOWED_CHARS]\+\) type [a-z0-9\_.]\+ (.*)$|\1|\"`"
+  [[ "$NAME" ]] || continue
+
+  SIZE="`df -B 1 \"$TDEV\" | grep -v '^Filesystem' | awk '{print($2)}'`"
+  [[ "$SIZE" ]] || SIZE='?'
+
+  echo "$NAME	$TYPE	$FSYS	$STAT	 $SIZE	$DEV"
+done

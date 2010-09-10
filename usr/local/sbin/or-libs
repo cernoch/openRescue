@@ -32,8 +32,10 @@ function anglicize() {
 	sed 's/ç/c/g'
 }
 
+export ALLOWED_CHARS=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST1234567890_
+
 function remnonascii() {
-	sed 's-[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST1234567890_]--g'
+	sed "s-[^$ALLOWED_CHARS]--g"
 }
 
 function urlfriendly() {
