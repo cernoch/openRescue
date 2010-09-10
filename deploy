@@ -1,2 +1,3 @@
 #!/bin/bash
-cp usr/local/sbin/or-* /usr/local/sbin/
+sudo cp usr/local/sbin/or-* /usr/local/sbin/
+sudo rsync -av --delete srv/www/ /var/www/
