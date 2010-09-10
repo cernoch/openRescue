@@ -13,10 +13,6 @@ if ($data == null) {
 $command = "sudo or-mount \"".escapeshellcmd($data->path)."\"";
 exec($command, $results, $retval);
 
-$f=fopen("/tmp/ahoj.txt","w");
-fputs($f,$retval);
-fclose($f);
-
 if ($retval != 0) {
 	header("x", true, 500);
 	header('Content-type: text/plain');

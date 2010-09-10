@@ -4,63 +4,10 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>jQuery UI Example Page</title>
 		<link type="text/css" href="css/flick/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="js/mimetypes.js"></script>
 		<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
 		<script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
-		<script type="text/javascript">
-			$(function(){
-
-				// Accordion
-				$("#accordion").accordion({ header: "h3" });
-	
-				// Tabs
-				$('#tabs').tabs();
-	
-
-				// Dialog			
-				$('#dialog').dialog({
-					autoOpen: false,
-					width: 600,
-					buttons: {
-						"Ok": function() { 
-							$(this).dialog("close"); 
-						}, 
-						"Cancel": function() { 
-							$(this).dialog("close"); 
-						} 
-					}
-				});
-				
-				// Dialog Link
-				$('#dialog_link').click(function(){
-					$('#dialog').dialog('open');
-					return false;
-				});
-
-				// Datepicker
-				$('#datepicker').datepicker({
-					inline: true
-				});
-				
-				// Slider
-				$('#slider').slider({
-					range: true,
-					values: [17, 67]
-				});
-				
-				// Progressbar
-				$("#progressbar").progressbar({
-					value: 20 
-				});
-				
-				//hover states on the static widgets
-				$('#dialog_link, ul#icons li').hover(
-					function() { $(this).addClass('ui-state-hover'); }, 
-					function() { $(this).removeClass('ui-state-hover'); }
-				);
-				
-			});
-		</script>
 		<style type="text/css">
 			/*demo page css*/
 			body{ font: 10pt "Droid Sans", sans-serif; margin: 0px}
@@ -72,10 +19,13 @@
 			ul#icons span.ui-icon {float: left; margin: 0 4px;}
 			
 			
-			.ui-state-error, .ui-state-highlight {padding: 0 .7em; margin: 1em}			
+			.ui-state-error, .ui-state-highlight {padding: 0 .7em}			
 			.ui-state-error .ui-icon, .ui-state-highlight .ui-icon {float: left; margin-right: .3em}
 			
-			div.devices {position:fixed; left:0px; width:20em; top:0px; bottom:0px; overflow: scroll}
+			div.devices {position:fixed; width:200pt; left:0px; top:0px; bottom:0px; overflow: auto; border-right: 1px solid gray}
+			div.main    {position:fixed; left:200pt; right:0px; top:0px; bottom:0px; overflow: auto}
+			div.devices > * {margin: 8pt}
+			
 			.device > td {padding-bottom:1em}
 			
 			.devIcon {text-align: center}
@@ -83,13 +33,16 @@
 			.devDetails {margin:4pt; color:#666; font-size: 80%}}
 			.devDetails th {text-align:right; display:none}							
 			
-			.devStat.online {background-image: url('img/22/online.png');}			
+			.devStat.online  {background-image: url('img/22/online.png');}			
 			.devStat.offline {background-image: url('img/22/offline.png');}						
 			.devStat {font-size: 150%; margin-bottom:12pt;
 				padding-left: 26px;
 				background-repeat: no-repeat;
 				background-position-y: center
 			}
+			
+			.browser {width:100%}
+			.browser td:first-child {width:16px}
 			
 		</style>	
 	</head>
@@ -103,11 +56,63 @@
 				You can enable or disable access to drives in your computer
 				by clicking on the <strong>Online/Offline</strong> label.</p>
 			</div>
-		</div>	
+		</div>		
+	</div>
 	
+	<div class='main'>
+		<table class='browser'>
+			<thead><tr>
+				<th colspan='2'>File</th>
+				<th>Size</th>
+				<th>Mime</th>
+			</tr></thead>
+			<tbody/>
+		</table>
+		
 	</div>
 
 <script type="text/javascript">
+
+	function browse(path) { $.ajax({
+			url:"api/dir.php", type:"PUT",
+			data: $.toJSON({path:path}),
+			success: function(data) {
+				
+				$b = $("table.browser tbody").html("");
+
+				if (path.indexOf("/") > 0) {				
+					$row = $b.append("<tr/>").children(":last");
+					$row.append("<td/>").children(":last").html("<img/>").children(":last").css("cursor","pointer").attr("src","img/16/up.png");
+					$row.append("<td/>").children(":last").text("..").css("cursor","pointer").click(function() {
+						browse(path.substr(0,path.lastIndexOf("/")));
+					});
+					$row.append("<td/>").children(":last").text(" ");
+					$row.append("<td/>").children(":last").text(" ");
+				}				
+				
+				$.each(data.entries, function(i,e) {
+					function deeper() { browse(path+"/"+e.name); }
+					
+					$row = $b.append("<tr/>").children(":last");
+					$row.append("<td/>").children(":last").html("<img/>").children(":last").attr("src","img/16/mimetypes/"+mime[e.mime]).css("cursor","pointer").click(deeper);
+					$row.append("<td/>").children(":last").text(e.name).css("cursor","pointer").click(deeper);
+					$row.append("<td/>").children(":last").text(humanSize(e.size));
+					$row.append("<td/>").children(":last").text(e.mime);
+
+					if ($row.type == "d") $row.click(function() { browse(path+"/radek"); });	
+				});
+			}
+	});}
+
+
+
+	$(function() {
+		$("input").keypress(function(evt){
+			alert(evt.keyCode);
+		}); 	
+	})
+
+
 
 	$.ajaxSetup({dataType:"json"});
 
@@ -162,6 +167,16 @@
 				$("div.devices table.devices").remove();
 				$view = $("div.devices").append("<table class='devices'><tbody/></table>").children(":last").children(":last");
 				
+				
+				function navigate() {
+					var $dev = $(this).parents(".device");
+					var path = $(".devPath", $dev).text();
+					var name = $(".devName", $dev).text();
+					var line = $(".devStat", $dev).text() == "Online";
+					
+					browse(name);
+				}				
+				
 				for (i in data) {
 					var $row = $view.append("<tr class='device'></tr>").children(":last");
 					var $td = $row.append("<td class='devIcon'/>").children(":last");
@@ -169,11 +184,15 @@
 					$td.append("<div class='devName'/>").children(":last").text(data[i].name);
 					//$td.append("<div class='field-path'/>").children(":last").text(i);
 					
-					
+					var mounted = data[i].stat == "mounted";
 					$td = $row.append("<td></td>").children("td:last");
 					$td.append("<div/>").children(":last").html(
-						data[i].stat == "mounted" ? "<span class='devStat online'>Online</span>"
-						                           : "<span class='devStat offline'>Offline</span>" );
+						mounted ? "<span class='devStat online'>Online</span>"
+						        : "<span class='devStat offline'>Offline</span>" );
+
+					if (mounted) 
+						$(".devIcon", $row).css("text-decoration", "underline").css("cursor", "pointer").click(navigate);
+
 					
 					var $info = $td.append("<table class='devDetails'/>").children(":last");
 					//$info.append("<tr><th>Size:</th><td class='devSize'/></tr>").children(":last").children(":last").children(":last").text(humanSize(data[i].size));
@@ -184,7 +203,6 @@
 				}
 				
 				$(".devStat", $view).css("text-decoration", "underline").css("cursor", "pointer").click(function() {
-						
 					var $dev = $(this).parents(".device");
 					var path = $(".devPath", $dev).text();
 					var name = $(".devName", $dev).text();
@@ -199,6 +217,7 @@
 						}
 					});
 				});
+				
 				
 			}
 		});
@@ -218,6 +237,83 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<script type="text/javascript">
+			$(function(){
+
+				// Accordion
+				$("#accordion").accordion({ header: "h3" });
+	
+				// Tabs
+				$('#tabs').tabs();
+	
+
+				// Dialog			
+				$('#dialog').dialog({
+					autoOpen: false,
+					width: 600,
+					buttons: {
+						"Ok": function() { 
+							$(this).dialog("close"); 
+						}, 
+						"Cancel": function() { 
+							$(this).dialog("close"); 
+						} 
+					}
+				});
+				
+				// Dialog Link
+				$('#dialog_link').click(function(){
+					$('#dialog').dialog('open');
+					return false;
+				});
+
+				// Datepicker
+				$('#datepicker').datepicker({
+					inline: true
+				});
+				
+				// Slider
+				$('#slider').slider({
+					range: true,
+					values: [17, 67]
+				});
+				
+				// Progressbar
+				$("#progressbar").progressbar({
+					value: 20 
+				});
+				
+				//hover states on the static widgets
+				$('#dialog_link, ul#icons li').hover(
+					function() { $(this).addClass('ui-state-hover'); }, 
+					function() { $(this).removeClass('ui-state-hover'); }
+				);
+				
+			});
+		</script>
 
 <div style='display:none'>
 	<h1 style='margin-top: 20em'>Welcome to jQuery UI!</h1>
