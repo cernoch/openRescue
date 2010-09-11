@@ -1,231 +1,174 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-		<title>jQuery UI Example Page</title>
-		<link type="text/css" href="css/flick/jquery-ui-1.8.4.custom.css" rel="stylesheet" />	
-		<script type="text/javascript" src="js/mimetypes.js"></script>
-		<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
-		<script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
-		<style type="text/css">
-			/*demo page css*/
-			body{ font: 10pt "Droid Sans", sans-serif; margin: 0px}
-			.demoHeaders { margin-top: 2em; }
-			#dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
-			#dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
-			ul#icons {margin: 0; padding: 0;}
-			ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
-			ul#icons span.ui-icon {float: left; margin: 0 4px;}
-			
-			
-			.ui-state-error, .ui-state-highlight {padding: 0 .7em}			
-			.ui-state-error .ui-icon, .ui-state-highlight .ui-icon {float: left; margin-right: .3em}
-			
-			div.devices {position:fixed; width:200pt; left:0px; top:0px; bottom:0px; overflow: auto; border-right: 1px solid gray}
-			div.main    {position:fixed; left:200pt; right:0px; top:0px; bottom:0px; overflow: auto}
-			div.devices > * {margin: 8pt}
-			
-			.device > td {padding-bottom:1em}
-			
-			.devIcon {text-align: center}
-			.devName {font-weight: bold}
-			.devDetails {margin:4pt; color:#666; font-size: 80%}}
-			.devDetails th {text-align:right; display:none}							
-			
-			.devStat.online  {background-image: url('img/22/online.png');}			
-			.devStat.offline {background-image: url('img/22/offline.png');}						
-			.devStat {font-size: 150%; margin-bottom:12pt;
-				padding-left: 26px;
-				background-repeat: no-repeat;
-				background-position-y: center
-			}
-			
-			.browser {width:100%}
-			.browser td:first-child {width:16px}
-			
-		</style>	
-	</head>
-	<body>
+<?php
+	$side_width = "200pt";
+?><!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>jQuery UI Example Page</title>
+<link type="text/css" href="css/flick/jquery-ui-1.8.4.custom.css" rel="stylesheet"/>
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
+<script type="text/javascript" src="mimetypes.js"></script>
+<script type="text/javascript" src="browser.js"></script>
+
+<style type="text/css">
+	/*demo page css*/
+	body{ font: 10pt "Droid Sans", sans-serif; margin: 0px}
+	.demoHeaders { margin-top: 2em; }
+	#dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
+	#dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
+	ul#icons {margin: 0; padding: 0;}
+	ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+	ul#icons span.ui-icon {float: left; margin: 0 4px;}
 	
-	<div class='devices'>
+	.ui-state-error, .ui-state-highlight {padding: 0 .7em}			
+	.ui-state-error .ui-icon, .ui-state-highlight .ui-icon {float: left; margin-right: .3em}
 	
-		<div class="ui-widget">
-			<div class="ui-state-highlight ui-corner-all"> 
-				<p><span class="ui-icon ui-icon-info"></span>
-				You can enable or disable access to drives in your computer
-				by clicking on the <strong>Online/Offline</strong> label.</p>
-			</div>
-		</div>		
-	</div>
+	/* Helpers */
+	.link {text-decoration:underline}
+	.clickable {cursor:pointer}
+	.clickable:hover {text-decoration:underline}
 	
-	<div class='main'>
-		<table class='browser'>
-			<thead><tr>
-				<th colspan='2'>File</th>
-				<th>Size</th>
-				<th>Mime</th>
-			</tr></thead>
-			<tbody/>
-		</table>
+	/* Basic layout */
+	.layout {position:fixed; margin:0px; padding:0px; overflow: auto}
+	#head {right:0px;    left:0px; height:36px;    top:0px; overflow:hidden}
+	#side {width:<?php echo $side_width; ?>;  left:0px;    top:37px; bottom:0px}
+	#main { left:<?php echo $side_width; ?>; right:0px;    top:37px; bottom:0px}
+	
+	/* Borders */
+	#side {border-right: 1px solid #667483}
+	#head {border-bottom: 1px solid #667483}
+
+	/* The head */
+	ul#head {
+		font-weight:normal; font-size:10pt;
+		background-image: url('img/head-bg.png');
+		background-position-y: top;
+	}
+	ul#head li {
+		display:block; float:left; margin:0px;
+		padding:0px; padding-left:2em; padding-right:2em;
+		border-right: 1px solid #86A4B3;	
+		height:36px; line-height:36px;
+	}
+	ul#head li.ajax {float:right; padding: 2px}
+	/* head's icons */
+	ul#head li.devs, ul#head li.svcs, ul#head li.info {
+		padding-left: 34px; margin-left:1.5em;
+		background-repeat: no-repeat;
+		background-position-y: center; }
+	ul#head li.devs { background-image: url('img/24/drive.png');}
+	ul#head li.svcs { background-image: url('img/24/services.png');}
+	ul#head li.info { background-image: url('img/24/network.png');}
+	
+	
+	div.devices > * {margin: 8pt}
+			
+	.device > td {padding-bottom:1em}
+			
+	.devIcon {text-align: center}
+	.devName {font-weight: bold}
+	.devDetails {margin:4pt; color:#666; font-size: 80%}}
+	.devDetails th {text-align:right; display:none}							
 		
+	.devStat.online  {background-image: url('img/22/online.png');}			
+	.devStat.offline {background-image: url('img/22/offline.png');}						
+	.devStat {font-size: 150%; margin-bottom:12pt;
+		padding-left: 26px;
+		background-repeat: no-repeat;
+		background-position-y: center
+	}
+	
+	.browser {width:100%}
+	.browser tr > td:first-child {width:16px}
+	.browser tr > td:first-child + td + td,
+	.browser tr > th:first-child + th {width:8em}
+</style>	
+
+</head><body>
+	
+<ul id='head' class='status layout'>
+	<li class='devs' title='Toggle the display of all devices in your system'>Devices</li>
+	<li class='svcs'>Services</li>
+	<li class='info'>Network status</li>
+	<li class='ajax'></li>
+</ul>
+	
+<div id='side' class='devices layout'>
+	<div class="ui-widget">
+		<div class="ui-state-highlight ui-corner-all"> 
+			<p><span class="ui-icon ui-icon-info"></span>
+			You can enable or disable access to drives in your computer
+			by clicking on the <strong>Online/Offline</strong> label.</p>
+		</div>
 	</div>
+
+	<table class='devices'>
+		<tbody/>
+	</table>	
+</div>
+	
+<div id='main' class='layout'>
+	<table class='browser'>
+		<thead><tr>
+			<th colspan='2'>File</th>
+			<th>Size</th>
+		</tr></thead>
+		<tbody/>
+	</table>
+</div>
 
 <script type="text/javascript">
+// BOOT: setup ajax
+$(function() { $.ajaxSetup({dataType:"json"}); });
 
-	function browse(path) { $.ajax({
-			url:"api/dir.php", type:"PUT",
-			data: $.toJSON({path:path}),
-			success: function(data) {
-				
-				$b = $("table.browser tbody").html("");
+// AXAJ-BOOT: Showing the "clock" while ajax working
+var clockTimer = null;
+function showClock() { $(".status .ajax")
+	.html("<img width='32' height='32'/>").children(":last")
+	.attr("src","img/ajax-loader.gif");
+}
+$("body").ajaxStart(function() { clockTimer = setTimeout("showClock();",500); });
+$("body").ajaxStop(function() { clearTimeout(clockTimer); $(".status .ajax").html(""); });
 
-				if (path.indexOf("/") > 0) {				
-					$row = $b.append("<tr/>").children(":last");
-					$row.append("<td/>").children(":last").html("<img/>").children(":last").css("cursor","pointer").attr("src","img/16/up.png");
-					$row.append("<td/>").children(":last").text("..").css("cursor","pointer").click(function() {
-						browse(path.substr(0,path.lastIndexOf("/")));
-					});
-					$row.append("<td/>").children(":last").text(" ");
-					$row.append("<td/>").children(":last").text(" ");
-				}				
-				
-				$.each(data.entries, function(i,e) {
-					function deeper() { browse(path+"/"+e.name); }
-					
-					$row = $b.append("<tr/>").children(":last");
-					$row.append("<td/>").children(":last").html("<img/>").children(":last").attr("src","img/16/mimetypes/"+mime[e.mime]).css("cursor","pointer").click(deeper);
-					$row.append("<td/>").children(":last").text(e.name).css("cursor","pointer").click(deeper);
-					$row.append("<td/>").children(":last").text(humanSize(e.size));
-					$row.append("<td/>").children(":last").text(e.mime);
-
-					if ($row.type == "d") $row.click(function() { browse(path+"/radek"); });	
-				});
-			}
-	});}
-
-
-
-	$(function() {
-		$("input").keypress(function(evt){
-			alert(evt.keyCode);
-		}); 	
-	})
-
-
-
-	$.ajaxSetup({dataType:"json"});
-
-	$("body").ajaxStart(function() {
-		$("#status").text("AJAXING");
-	});
+// AXAJ-BOOT: Error shows a modal dialog with the error
+$("body").ajaxError(function(evt, data, opts, thrown) {
+	$d = $("body").append("<div></div>").children(":last");
 	
-	$("body").ajaxStop(function() {
-		$("#status").text("STOPPED");
+	$d.html("<div class='ui-widget'><div class='ui-state-error ui-corner-all'>" 
+			+"<p><span class='ui-icon ui-icon-alert'></span>" 
+			+"<strong>Alert:</strong> Something went wrong. The requested action"
+			+" was not been performed.</p>"
+			+"</div></div><p>Server resonse:</p><pre></pre>").children("pre").text(data.responseText);
+	$d.dialog({
+		title : data.statusText,
+		width : "70%",
+		modal : true,
+		buttons:{ "Close" : function() { $d.dialog("close"); } },
+		close : function() {$d.remove();}
 	});
+});
 
-	$("body").ajaxError(function(evt, data, opts, thrown) {
-		$d = $("body").append("<div></div>").children(":last");
-		
-		$d.html("<div class='ui-widget'><div class='ui-state-error ui-corner-all'>" 
-				+"<p><span class='ui-icon ui-icon-alert'></span>" 
-				+"<strong>Alert:</strong> Something went wrong. The requested action"
-				+" was not been performed.</p>"
-				+"</div></div><p>Server resonse:</p><pre></pre>").children("pre").text(data.responseText);
-		$d.dialog({
-			title : data.statusText,
-			width : "70%",
-			modal : true,
-			buttons:{ "Close" : function() { $d.dialog("close"); } },
-			close : function() {$d.remove();}
+// USER INTERFACE: Show/hide of the "sidebar"
+$(function() { $("#head .devs").addClass("clickable").click(toggleSide); });
+function toggleSide() {
+	side = $("#side");
+	if (side.css("display") == "none") {
+		// Show the sidebar
+		side.css("overflow", "hidden");
+		side.slideDown(400);
+		$("#main").animate({"left":"<?php echo $side_width; ?>"});
+	} else {
+		// Hide the sidebar
+		side.slideUp(1500, function() {
+			side.css("overflow","");
+			$("#main").animate({"left":"0"});
 		});
-	});
-	
-	function humanSize(bytes) {
-		
-		function trim(size) {
-			var out = (size>100 ? Math.round(size) : Math.round(size*10.0)/10.0);
-			return out == undefined ? "unknown" : out;
-		}
-
-		if (bytes > 1024) { bytes /= 1024.0;
-		if (bytes > 1024) { bytes /= 1024.0;
-		if (bytes > 1024) { bytes /= 1024.0;
-		if (bytes > 1024) { bytes /= 1024.0;
-		return trim(bytes) + " TB"; }
-		return trim(bytes) + " GB"; }
-		return trim(bytes) + " MB"; }
-		return trim(bytes) + " kB"; }
 	}
+}
 
-	
-	
-	function reloadDevices(){
-		$.ajax({
-			"url" : "api/list.php",
-			success : function(data) {
-				$("div.devices table.devices").remove();
-				$view = $("div.devices").append("<table class='devices'><tbody/></table>").children(":last").children(":last");
-				
-				
-				function navigate() {
-					var $dev = $(this).parents(".device");
-					var path = $(".devPath", $dev).text();
-					var name = $(".devName", $dev).text();
-					var line = $(".devStat", $dev).text() == "Online";
-					
-					browse(name);
-				}				
-				
-				for (i in data) {
-					var $row = $view.append("<tr class='device'></tr>").children(":last");
-					var $td = $row.append("<td class='devIcon'/>").children(":last");
-					$td.append("<img class='devType'/>").children("img").attr("src", "img/64/"+data[i].type+".png");
-					$td.append("<div class='devName'/>").children(":last").text(data[i].name);
-					//$td.append("<div class='field-path'/>").children(":last").text(i);
-					
-					var mounted = data[i].stat == "mounted";
-					$td = $row.append("<td></td>").children("td:last");
-					$td.append("<div/>").children(":last").html(
-						mounted ? "<span class='devStat online'>Online</span>"
-						        : "<span class='devStat offline'>Offline</span>" );
 
-					if (mounted) 
-						$(".devIcon", $row).css("text-decoration", "underline").css("cursor", "pointer").click(navigate);
-
-					
-					var $info = $td.append("<table class='devDetails'/>").children(":last");
-					//$info.append("<tr><th>Size:</th><td class='devSize'/></tr>").children(":last").children(":last").children(":last").text(humanSize(data[i].size));
-					//$info.append("<tr><th>Path:</th><td class='devPath'/></tr>").children(":last").children(":last").children(":last").text(i);
-					//$info.append("<tr><th>FS:</th><td class='defFsys'/></tr>").children(":last").children(":last").children(":last").text(data[i].fsys);
-					$info.append("<tr><td class='devPath'/></tr>").children(":last").children(":last").children(":last").text(i);
-					$info.append("<tr><td class='defFsys'/></tr>").children(":last").children(":last").children(":last").text(humanSize(data[i].size) + ", " + data[i].fsys);
-				}
-				
-				$(".devStat", $view).css("text-decoration", "underline").css("cursor", "pointer").click(function() {
-					var $dev = $(this).parents(".device");
-					var path = $(".devPath", $dev).text();
-					var name = $(".devName", $dev).text();
-					var line = $(".devStat", $dev).text() == "Online";
-					
-					$.ajax({ type:"PUT",
-						url: line ? "api/umount.php" : "api/mount.php",
-						data: $.toJSON({"path":path, "name":name}),
-						success : function(data) {
-							//alert($.toJSON(data));
-							reloadDevices();
-						}
-					});
-				});
-				
-				
-			}
-		});
-	};
-	
-	$(function() {
-		reloadDevices();
-	});
+$(function() { $("#side .devices").loadDevices(); });
 </script>
 	
 

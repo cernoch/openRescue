@@ -1,3 +1,5 @@
 #!/bin/bash
 sudo cp usr/local/sbin/or-* /usr/local/sbin/
 #sudo rsync -av --delete srv/www/ /var/www/
+sudo mount -o bind usr/local/sbin /usr/local/sbin
+sudo mount -o bind srv/www /var/www
