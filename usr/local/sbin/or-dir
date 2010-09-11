@@ -19,7 +19,7 @@ ls -1A "/mnt/$1" | while read F; do
     EXT="`echo \"$F\" | grep '.\.[a-zA-Z0-9]\+$' | sed 's-.*\.\([a-zA-Z0-9]\+\)$-\1-'`"
     NFO="`file -i \"/mnt/$1/$F\" | sed 's/^.*:[ 	]//'`"
     MIME=
-    [[ "$EXT" ]] && MIME="`grep -v '^#' /etc/mime.types | sed 's-\t- -g' | grep \" $EXT\" | sed 's- .*$--' | head -1`"
+    [[ "$EXT" ]] && MIME="`grep -v '^#' /etc/mime.types | sed 's-\t- -g' | grep \" $EXT[$ ]\" | sed 's- .*$--' | head -1`"
     [[ "$MIME" ]] || MIME="`echo \"$NFO\" | sed 's/^.*: //' | sed 's/;.*//'`"
     CHAR="`echo \"$NFO\" | sed 's|.* charset=||'`"
   fi
