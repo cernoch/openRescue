@@ -1,9 +1,10 @@
 #!/bin/bash
 #VER=`git tag | tail -1 | sed 's-^v--'`
-VER=0.0.16
+VER=0.0.19
 rm -f "openRescue-$VER.tar.bz2"
-tar -cf "openRescue-$VER.tar" --owner=root --group=root usr/local/sbin/* srv/www/* etc/*
-tar -cf "openRescue-$VER-home.tar" --numeric-owner --owner=1000 --group=100 home/admin/.config/chromium home/admin/Desktop/* home/admin/.gconf
+tar -cf "openRescue-$VER.tar" --owner=root --group=root usr/sbin/* srv/www/* `find etc/ -type l` `find etc/ -type f`
+tar -cf "openRescue-$VER-home.tar" --numeric-owner --owner=1000 --group=100\
+ home/admin/.config/chromium home/admin/Desktop/* home/admin/.gconf
 tar -Af "openRescue-$VER.tar" "openRescue-$VER-home.tar"
 rm "openRescue-$VER-home.tar"
 bzip2 "openRescue-$VER.tar"
