@@ -4,7 +4,7 @@
 $.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.ajax({
 	url:"api/list.php",
 	success: function(data) {
-		$view = $("tbody", $this); /* TODO: Refactor the variable to $body */
+		$view = $this.children("tbody").html(""); /* TODO: Refactor the variable to $body */
 		// Add each drive into the table
 		for (i in data) {
 			$row = $view.append("<tr class='device'></tr>").children(":last");
@@ -27,7 +27,7 @@ $.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.a
 			// Add the table with details of the drive					
 			$info = $td.append("<table class='devDetails'><tr><td class='devPath'/></tr><tr><td class='devDets'/></tr></table>").children(":last");
 			$(".devPath",$info).text(i);
-			$(".devPath",$info).text(humanSize(data[i].size) + ", " + data[i].fsys);
+			$(".devDets",$info).text(humanSize(data[i].size) + ", " + data[i].fsys);
 		}
 		
 		// Toggle Online/Offline status
