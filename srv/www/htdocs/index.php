@@ -139,7 +139,9 @@ $("body").ajaxError(function(evt, data, opts, thrown) {
 			+"<p><span class='ui-icon ui-icon-alert'></span>" 
 			+"<strong>Alert:</strong> Something went wrong. The requested action"
 			+" was not been performed.</p>"
-			+"</div></div><p>Server resonse:</p><pre></pre>").children("pre").text(data.responseText);
+			+"</div></div><pre></pre>").children("pre").text(data.responseText);
+	if (data.resonseText != undefined) $("pre",$d).prepend("<p>Server resonse:</p>");
+			
 	$d.dialog({
 		title : data.statusText,
 		width : "70%",

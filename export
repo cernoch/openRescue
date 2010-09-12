@@ -1,6 +1,6 @@
 #!/bin/bash
 #VER=`git tag | tail -1 | sed 's-^v--'`
-VER=0.0.15
+VER=0.0.16
 rm -f "openRescue-$VER.tar.bz2"
 tar -cf "openRescue-$VER.tar" --owner=root --group=root usr/local/sbin/* srv/www/* etc/*
 tar -cf "openRescue-$VER-home.tar" --numeric-owner --owner=1000 --group=100 home/admin/.config/chromium home/admin/Desktop/* home/admin/.gconf
