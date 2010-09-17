@@ -1,28 +1,30 @@
 #!/bin/bash
-
-echo "$1" >> /tmp/aaa.log
-
-ls -1A "/mnt/$1" | while read F; do
+{
+  [[ -d "/mnt/$1" ]] && ls -1A "/mnt/$1/" | sed "s|^|/mnt/$1/|"
+  [[ -f "/mnt/$1" ]] && echo "/mnt/$1"
+} | while read F; do
   TYPE=x
-  [[ -f "/mnt/$1/$F" ]] && TYPE=f
-  [[ -d "/mnt/$1/$F" ]] && TYPE=d
+  [[ -f "$F" ]] && TYPE=f
+  [[ -d "$F" ]] && TYPE=d
 
   FLAG=x
 
   SIZE=?
-  [[ "$TYPE" = "f" ]] && SIZE=`stat -c%s "/mnt/$1/$F"`
+  [[ "$TYPE" = "f" ]] && SIZE=`stat -c%s "$F"`
 
-  if [ -d "/mnt/$1/$F" ]; then
+  if [ -d "$F" ]; then
     MIME="application/x-directory"
     CHAR="undefined"
   else
     EXT="`echo \"$F\" | grep '.\.[a-zA-Z0-9]\+$' | sed 's-.*\.\([a-zA-Z0-9]\+\)$-\1-'`"
-    NFO="`file -i \"/mnt/$1/$F\" | sed 's/^.*:[ 	]//'`"
+    NFO="`file -i \"$F\" | sed 's/^.*:[ 	]//'`"
     MIME=
     [[ "$EXT" ]] && MIME="`grep -v '^#' /etc/mime.types | sed 's-\t- -g' | grep \" $EXT[$ ]\" | sed 's- .*$--' | head -1`"
     [[ "$MIME" ]] || MIME="`echo \"$NFO\" | sed 's/^.*: //' | sed 's/;.*//'`"
     CHAR="`echo \"$NFO\" | sed 's|.* charset=||'`"
   fi
 
-  echo "$TYPE	$FLAG	$SIZE	$MIME	$CHAR	$F"
+  FILE="`echo \"$F\" | sed 's|.*/||'`"
+
+  echo "$TYPE	$FLAG	$SIZE	$MIME	$CHAR	$FILE"
 done
