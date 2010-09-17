@@ -1,6 +1,6 @@
 #!/bin/bash
 #VER=`git tag | tail -1 | sed 's-^v--'`
-VER=0.0.27
+VER=0.0.28
 rm -f "openRescue-$VER.tar.bz2"
 chmod 0440 etc/sudoers
 tar -cf "openRescue-$VER.tar" --owner=root --group=root usr/sbin/* srv/www/* `find etc/ -type l` `find etc/ -type f`
