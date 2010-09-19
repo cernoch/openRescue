@@ -4,7 +4,6 @@
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>jQuery UI Example Page</title>
-<link type="text/css" href="css/flick/jquery-ui-1.8.4.custom.css" rel="stylesheet"/>
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
@@ -13,7 +12,9 @@
 
 <style type="text/css">
 	/*demo page css*/
-	body{ font: 10pt "Droid Sans", sans-serif; margin: 0px}
+	body {font: 10pt "Droid Sans", sans-serif; margin: 0px; cursor: default}
+	a {color: inherit; text-decoration: none}
+	
 	.demoHeaders { margin-top: 2em; }
 	#dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
 	#dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
@@ -79,11 +80,45 @@
 		background-position-y: center
 	}
 	
-	.browser {width:100%}
+	.browser {
+		width:100%; margin-left:1px;
+		border-top: 1px solid #AAA;
+		border-collapse:collapse;
+	}
 	.browser tr > td:first-child {width:16px}
 	.browser tr > td:first-child + td + td,
 	.browser tr > th:first-child + th {width:8em}
-</style>	
+	.browser tr.odd  {background-color: #EEE}
+	.browser tr.even {background-color: #DDD}
+	
+	.fsbar .barItem {height:26px; line-height:26px;}
+	.fsbar .download {
+		float:right; display:block;
+		margin-right:1em;
+		padding-left:26px;
+		background-repeat: no-repeat;
+		background-position-y: center;
+		background-image: url('img/22/download.png');
+	}
+	
+	ul.path {
+		margin:0px; padding:0px;
+		padding-left: 1em;
+		list-style: none;
+		font-family: "Droid Sans Mono", monospace;
+	}
+	ul.path li {float:left;}
+	ul.path li.delim {margin-left:0.3em; margin-right:0.3em }
+	ul.path li.root {
+		background-repeat: no-repeat;
+		background-position-y: center;
+		background-image: url('img/16/drive.png');
+		height:26px; padding-left:20px;
+	}
+	
+</style>
+<link type="text/css" href="css/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
+
 
 </head><body>
 	
@@ -109,11 +144,16 @@
 </div>
 	
 <div id='main' class='layout'>
+	<div class='fsbar'>
+		<div class='barItem download zip'><a href='#'>ZIP</a></div>
+		<div class='barItem download tgz'><a href='#'>TAR.GZ</a></div>
+		<ul class='path'><li class='barItem root'>sda1</li><li class='barItem delim'>/</li><li class='barItem dir'>home</li><li class='barItem delim'>/</li><li class='barItem dir'>radek</li><li class='barItem delim'>/</li><li class='barItem dir'>.gvfs</li></ul>
+	</div>
 	<table class='browser'>
-		<thead><tr>
+		<!--<thead><tr>
 			<th colspan='2'>File</th>
 			<th>Size</th>
-		</tr></thead>
+		</tr></thead>-->
 		<tbody/>
 	</table>
 </div>
@@ -168,7 +208,6 @@ function toggleSide() {
 		});
 	}
 }
-
 
 $(function() { $("#side .devices").loadDevices(); });
 </script>
