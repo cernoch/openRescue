@@ -32,7 +32,7 @@ function anglicize() {
 	sed 's/ç/c/g'
 }
 
-export ALLOWED_CHARS=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRST1234567890_-
+export ALLOWED_CHARS=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-
 
 function remnonascii() {
 	sed "s-[^$ALLOWED_CHARS]--g"
