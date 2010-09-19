@@ -1,0 +1,18 @@
+#!/bin/bash
+REQUEST="/mnt/$2"
+BASE="`dirname \"$REQUEST\"`"
+FILE="`basename \"$REQUEST\"`"
+cd "$BASE"
+
+if [ "$1" = "tgz" ]; then
+	tar cz --numeric-owner "$FILE"
+	exit
+fi
+
+if [ "$1" = "zip" ]; then
+	zip -rq - "$FILE"
+	exit
+fi
+
+echo "Unsupported archive format: '$1'"
+exit 1
