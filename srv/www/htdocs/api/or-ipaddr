@@ -1,0 +1,2 @@
+#!/bin/bash
+ifconfig | grep ' *inet addr:' | sed 's| *inet addr:\([0-9\.]*\).*|\1|' | grep -v '^127\.0\.0\.1$'
