@@ -23,6 +23,9 @@
 	.ui-state-error, .ui-state-highlight {padding: 0 .7em}			
 	.ui-state-error .ui-icon, .ui-state-highlight .ui-icon {float: left; margin-right: .3em}
 	
+	.ui-widget { font-family: "Droid Sans", sans-serif; }
+	.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button	{ font-family: "Droid Sans", sans-serif; }
+	
 	/* Helpers */
 	.link {text-decoration:underline}
 	.clickable {cursor:pointer}
@@ -31,8 +34,8 @@
 	/* Basic layout */
 	.layout {position:fixed; margin:0px; padding:0px; overflow: auto}
 	#head {right:0px;    left:0px; height:36px;    top:0px; overflow:hidden}
-	#side {width:250px;  left:0px;    top:37px; bottom:0px}
-	#main { left:251px; right:0px;    top:37px; bottom:0px}
+	#side {width:300px;  left:0px;    top:37px; bottom:0px}
+	#main { left:301px; right:0px;    top:37px; bottom:0px}
 	
 	/* Borders */
 	#side {border-right: 1px solid #667483}
@@ -40,9 +43,10 @@
 
 	/* The head */
 	ul#head {
-		font-weight:normal; font-size:10pt;
-		background-image: url('img/head-bg.png');
-		background-position-y: top;
+		font-weight:bold; font-size:10pt;
+		color:white;		
+		background-image: url('css/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png');
+		background-position-y: center;
 	}
 	ul#head li {
 		display:block; float:left; margin:0px;
@@ -80,7 +84,7 @@
 	
 	.browser {
 		width:100%;
-		border-top: 1px solid #AAA;
+		border-top: 1px solid #CCC;
 		border-collapse:collapse;
 	}
 	.browser tr > td:first-child {width:16px}
@@ -114,6 +118,7 @@
 		height:26px; padding-left:20px;
 	}
 	
+	.infoBox .ui-icon-closethick {float:right}
 </style>
 <link type="text/css" href="css/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
 
@@ -128,32 +133,54 @@
 </ul>
 	
 <div id='side' class='devices layout'>
-	<div class="ui-widget">
+	<div class="infoBox ui-widget">
 		<div class="ui-state-highlight ui-corner-all"> 
-			<p><span class="ui-icon ui-icon-info"></span>
+			<p><span class="ui-icon ui-icon-info">info</span>
+			<span class="ui-icon ui-icon-closethick">close</span>
 			You can enable or disable access to drives in your computer
 			by clicking on the <strong>Online/Offline</strong> label.</p>
 		</div>
 	</div>
 
-	<table class='devices'>
-		<tbody/>
-	</table>	
+	<table class='devices'><tbody/></table>	
 </div>
 	
 <div id='main' class='layout'>
-	<div class='fsbar'>
+	<div class='fsbar' style='display:none'>
 		<div class='barItem download zip'><a href='#'>ZIP</a></div>
 		<div class='barItem download tgz'><a href='#'>TAR.GZ</a></div>
-		<ul class='path'><li class='barItem root'>sda1</li><li class='barItem delim'>/</li><li class='barItem dir'>home</li><li class='barItem delim'>/</li><li class='barItem dir'>radek</li><li class='barItem delim'>/</li><li class='barItem dir'>.gvfs</li></ul>
+		<ul class='path'></ul>
 	</div>
-	<table class='browser'>
-		<!--<thead><tr>
-			<th colspan='2'>File</th>
-			<th>Size</th>
-		</tr></thead>-->
-		<tbody/>
-	</table>
+	<table class='browser'><tbody/></table>
+	
+	<div class="infoBox ui-widget" style="margin:10%">
+		<div class="ui-state-highlight ui-corner-all"> 
+			<p><span class="ui-icon ui-icon-info">info</span>
+			<span class="ui-icon ui-icon-closethick">close</span>
+			<strong>Access your hard-drives:</strong></p>
+			<ol>
+				<li>Click on the <strong>
+				<img src='img/22/online.png' style='width:1em; height:1em'/>
+				Offline</strong>
+				label next to one of your drives.
+				This will switch the drive to online mode.</li>
+				<li>Browse the drive by clicking on the
+				<img src='img/64/drive.png' style='width:1em; height:1em'/>
+				icon above the drive's name.</li>
+				<li>Display the folder you want to backup and click on the
+				<img src="img/22/download.png" style='width:1em; height:1em'/>
+				icon to download it.</li>
+			</ol>
+			
+			<hr/>
+			
+			<p><span class="ui-icon ui-icon-alert">alert</span>
+			<strong>Be careful!</strong></p>
+			<p>All your online drives are accessible to anyone in your
+			network. Make sure there are no unauthorized users of your network,
+			who might steal or delete your data.</p>
+		</div>
+	</div>	
 </div>
 
 <script type="text/javascript">
@@ -197,7 +224,7 @@ function toggleSide() {
 		// Show the sidebar
 		side.css("overflow", "hidden");
 		side.slideDown(400);
-		$("#main").animate({"left":"251px"});
+		$("#main").animate({"left":"301px"});
 	} else {
 		// Hide the sidebar
 		side.slideUp(1500, function() {
@@ -206,6 +233,12 @@ function toggleSide() {
 		});
 	}
 }
+
+$(function() {
+	$(".infoBox .ui-icon-closethick").addClass("clickable").click(function() {
+		$(this).parents(".infoBox").remove();
+	});
+});
 
 $(function() { $("#side .devices").loadDevices(); });
 </script>

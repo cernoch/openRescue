@@ -41,7 +41,9 @@ $.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.a
 					path:$(".devPath", $dev).text(),
 					name:$(".devName", $dev).text()
 				}),
-				success:function() { $this.loadDevices(); }
+				success:function() {
+					$this.loadDevices();
+				}
 			});
 		});
 	}
@@ -105,7 +107,10 @@ $.fn.browse = function(path) {return this.each(function() { $this=$(this); $.aja
 		
 		// Setup download-button paths
 		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+path);		
-		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+path);		
+		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+path);	
+		
+		$(".fsbar", $this).css("display","");
+		$(".infoBox", $this).remove();
 	}
 });});};
 
