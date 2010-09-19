@@ -1,6 +1,4 @@
-<?php
-	$side_width = "200pt";
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>jQuery UI Example Page</title>
@@ -33,8 +31,8 @@
 	/* Basic layout */
 	.layout {position:fixed; margin:0px; padding:0px; overflow: auto}
 	#head {right:0px;    left:0px; height:36px;    top:0px; overflow:hidden}
-	#side {width:<?php echo $side_width; ?>;  left:0px;    top:37px; bottom:0px}
-	#main { left:<?php echo $side_width; ?>; right:0px;    top:37px; bottom:0px}
+	#side {width:250px;  left:0px;    top:37px; bottom:0px}
+	#main { left:251px; right:0px;    top:37px; bottom:0px}
 	
 	/* Borders */
 	#side {border-right: 1px solid #667483}
@@ -81,7 +79,7 @@
 	}
 	
 	.browser {
-		width:100%; margin-left:1px;
+		width:100%;
 		border-top: 1px solid #AAA;
 		border-collapse:collapse;
 	}
@@ -199,7 +197,7 @@ function toggleSide() {
 		// Show the sidebar
 		side.css("overflow", "hidden");
 		side.slideDown(400);
-		$("#main").animate({"left":"<?php echo $side_width; ?>"});
+		$("#main").animate({"left":"251px"});
 	} else {
 		// Hide the sidebar
 		side.slideUp(1500, function() {
