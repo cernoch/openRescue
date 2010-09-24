@@ -43,9 +43,8 @@
 
 	/* The head */
 	ul#head {
-		font-weight:bold; font-size:10pt;
-		color:white;		
-		background-image: url('css/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png');
+		font-weight:normal; font-size:10pt;
+		background-image: url('img/head-bg.png');
 		background-position: left center;
 	}
 	ul#head li {
