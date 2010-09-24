@@ -119,6 +119,15 @@
 	}
 	
 	.infoBox .ui-icon-closethick {float:right}
+	
+	.infoBox .changable .stepNum {
+		line-height:60pt; font-size:60pt; 
+		color:#d5bf30; font-family:"Arial Black"; font-weight:bold;
+		margin:0.2em; padding:0px;
+	}
+	.infoBox .changable .stepData {
+		font-size:14pt; margin-top:-3em; margin-left:2em
+	}
 </style>
 <link type="text/css" href="css/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
 
@@ -135,10 +144,12 @@
 <div id='side' class='devices layout'>
 	<div class="infoBox ui-widget">
 		<div class="ui-state-highlight ui-corner-all"> 
-			<p><span class="ui-icon ui-icon-info">info</span>
-			<span class="ui-icon ui-icon-closethick">close</span>
-			You can enable or disable access to drives in your computer
-			by clicking on the <strong>Online/Offline</strong> label.</p>
+			<p><span class="ui-icon ui-icon-alert">Warning</span>
+			<span class="ui-icon ui-icon-closethick">Close</span>
+			<strong>Be careful!</strong></p>
+			<p>All your online drives are accessible to anyone in your
+			network. Make sure there are no unauthorized users of your network,
+			who might steal or delete your data.</p>
 		</div>
 	</div>
 
@@ -155,30 +166,8 @@
 	
 	<div class="infoBox ui-widget" style="margin:10%">
 		<div class="ui-state-highlight ui-corner-all"> 
-			<p><span class="ui-icon ui-icon-info">info</span>
-			<span class="ui-icon ui-icon-closethick">close</span>
-			<strong>Access your hard-drives:</strong></p>
-			<ol>
-				<li>Click on the <strong>
-				<img src='img/22/online.png' style='width:1em; height:1em'/>
-				Offline</strong>
-				label next to one of your drives.
-				This will switch the drive to online mode.</li>
-				<li>Browse the drive by clicking on the
-				<img src='img/64/drive.png' style='width:1em; height:1em'/>
-				icon above the drive's name.</li>
-				<li>Display the folder you want to backup and click on the
-				<img src="img/22/download.png" style='width:1em; height:1em'/>
-				icon to download it.</li>
-			</ol>
-			
-			<hr/>
-			
-			<p><span class="ui-icon ui-icon-alert">alert</span>
-			<strong>Be careful!</strong></p>
-			<p>All your online drives are accessible to anyone in your
-			network. Make sure there are no unauthorized users of your network,
-			who might steal or delete your data.</p>
+			<p><span class="ui-icon ui-icon-closethick">close</span></p>
+			<div class="changable"></div>
 		</div>
 	</div>	
 </div>
@@ -240,7 +229,38 @@ $(function() {
 	});
 });
 
-$(function() { $("#side .devices").loadDevices(); });
+var infoText1 =
+"<p class='stepNum'>Step 1.</p>"+
+"<p class='stepData'>Click on the <strong>"+
+"<img src='img/22/online.png' style='width:1em; height:1em'/> Offline"+
+"</strong> label next to one of your drives."+
+"This will switch the drive to online mode.</p>";
+
+var infoText2 =
+"<p class='stepNum'>Step 2.</p>"+
+"<p class='stepData'>Browse the drive by clicking on the "+
+"<img src='img/64/drive.png' style='width:1em; height:1em'/> "+
+"icon above the drive's name.</p>";
+
+var infoText3 =
+"<p class='stepNum'>Step 3.</p>"+
+"<p class='stepData'>Display the folder you want to backup and click on the "+
+"<img src='img/22/download.png' style='width:1em; height:1em'/> "+
+"icon to download it.</p>";
+
+
+$(function() {
+	$("#main .infoBox .changable").html(infoText1);
+	$("#side .devices").loadDevices({
+		onMount : function() {
+			$("#main .infoBox .changable").html(infoText2);
+		},
+		onBrowse : function() {
+			$("#main .infoBox").css("margin","3%");
+			$("#main .infoBox .changable").html(infoText3);
+		}
+	});
+});
 </script>
 	
 

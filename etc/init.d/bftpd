@@ -1,0 +1,57 @@
+#!/bin/sh
+# /etc/init.d/bftpd
+#
+### BEGIN INIT INFO
+# Provides:       bftpd
+# Required-Start: $network $named $remote_fs
+# Required-Stop:  $network $named $remote_fs
+# Default-Start:  3 5
+# Default-Stop:
+# Description:    FTP server "bftpd"
+### END INIT INFO
+
+. /etc/rc.status
+
+BFTPD_BIN=/usr/sbin/bftpd
+test -x $BFTPD_BIN || exit 5
+
+# First reset status of this service
+rc_reset
+
+case "$1" in
+    start)
+    	echo -n "Starting btfpd"
+        if checkproc $BFTPD_BIN; then
+                echo -n ": Bftpd is already running."
+                rc_status -v
+                exit
+        fi
+	startproc -l /var/log/bftpd $BFTPD_BIN -d
+	rc_status -v
+	;;
+    stop)
+	echo -n "Shutting down bftpd"
+	killproc -TERM $BFTPD_BIN > /dev/null
+	rc_status -v
+	;;
+    try-restart)
+        $0 status >/dev/null && $0 restart
+        rc_status
+        ;;
+    restart|reload|force-reload)
+        $0 stop
+        $0 start
+        rc_status
+        ;;
+    status)
+        echo -n "Checking for bftpd: "
+        checkproc $BFTPD_BIN
+	rc_status -v
+	;;
+    *)
+	echo "Usage: $0 {start|stop|try-restart|restart|reload|force-reload|status}"
+	exit 1
+	;;
+esac
+
+rc_exit

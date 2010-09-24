@@ -1,7 +1,12 @@
 /*
  * Populates the given table with a list of available devices
  */
-$.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.ajax({
+$.fn.loadDevices = function(options) { return this.each(function() { $this=$(this);
+	var opts = jQuery.extend({
+		onMount: function() {},
+		onBrowse: function() {}
+	}, options); $.ajax({
+
 	url:"api/list.php",
 	success: function(data) {
 		$view = $this.children("tbody").html(""); /* TODO: Refactor the variable to $body */
@@ -20,10 +25,16 @@ $.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.a
 			$td.append("<div/>").children(":last").html(
 				mounted ? "<span class='devStat online'>Online</span>"
 						: "<span class='devStat offline'>Offline</span>" );
-			if (mounted)
-				$(".devIcon", $row).addClass("link clickable").click(function() {
-					$("#main").browse($(".devName", $(this).parents(".device")).text());	
+			if (mounted) {
+				$(".devIcon .devName", $row).addClass("link clickable");
+				$(".devIcon img", $row).css("cursor","pointer");
+				$(".devIcon", $row).click(function() {
+					$("#main").browse({
+						path: $(".devName", $(this).parents(".device")).text(),
+						onBrowse: opts.onBrowse,
+					});	
 				});
+			}
 			// Add the table with details of the drive					
 			$info = $td.append("<table class='devDetails'><tr><td class='devPath'/></tr><tr><td class='devDets'/></tr></table>").children(":last");
 			$(".devPath",$info).text(i);
@@ -34,14 +45,16 @@ $.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.a
 		// Toggle Online/Offline status
 		$(".devStat", $view).addClass("link clickable").click(function() {
 			$dev = $(this).parents(".device");
+			data = {
+				path:$(".devPath", $dev).text(),
+				name:$(".devName", $dev).text()
+			};
 			$.ajax({
 				type:"PUT",
 				url: $(".devStat", $dev).hasClass("online") ? "api/umount.php" : "api/mount.php",
-				data: $.toJSON({
-					path:$(".devPath", $dev).text(),
-					name:$(".devName", $dev).text()
-				}),
-				success:function() {
+				data: $.toJSON(data),
+				success: function(result) {
+					opts.onMount(result);
 					$this.loadDevices();
 				}
 			});
@@ -51,28 +64,33 @@ $.fn.loadDevices = function() { return this.each(function() { $this=$(this); $.a
 
 
 // BROWSER: Navigation
-$.fn.browse = function(path) {return this.each(function() { $this=$(this); $.ajax({
+$.fn.browse = function(options) {return this.each(function() { $this=$(this);
+	var opts = jQuery.extend({
+		path: "/",
+		onBrowse: function() {}
+	}, options); $.ajax({
+
 	url:"api/dir.php", type:"PUT",
-	data: $.toJSON({path:path}),
+	data: $.toJSON({path:opts.path}),
 	success: function(data) {
 		// Determine if $this is the real browser or a container of a browser.
 		$b = $this.hasClass("browser") ? $this.children("tbody") : $("table.browser > tbody",$this);
 		$b.html("");
 
 		// Not the root directory => add the ".." list item
-		if (path.indexOf("/") > 0) {
+		if (opts.path.indexOf("/") > 0) {
 			$row = $b.append("<tr/>").children(":last");
 			$row.append("<td/>").children(":last").html("<img/>").children(":last").css("cursor","pointer").attr("src","img/16/up.png");
 			$row.append("<td/>").children(":last").text("..").css("cursor","pointer").click(function() {
-				$this.browse(path.substr(0,path.lastIndexOf("/")));
+				$this.browse({path: opts.path.substr(0,opts.path.lastIndexOf("/"))});
 			});
 			$row.append("<td/>").children(":last").text(" ");
 		}				
 		
 		// Populate the table
 		$.each(data.entries, function(i,e) {
-			var fullpath = path+"/"+e.name;
-			function deeper() { $this.browse(fullpath); }
+			var fullpath = opts.path+"/"+e.name;
+			function deeper() { $this.browse({path:fullpath}); }
 			function display() { window.open("api/get.php/"+fullpath,'welcome',''); return false; }
 			
 			var mtyp = mime[e.mime]; // Lookup the icon name
@@ -90,27 +108,30 @@ $.fn.browse = function(path) {return this.each(function() { $this=$(this); $.aja
 		$("tr:even", $this).addClass("even");
 		
 		// Generate the path toolbar
-		pathParts = path.split("/");
+		pathParts = opts.path.split("/");
 		pathSoFar = pathParts[0];
 		
 		$path = $(".path", $this);
-		$path.html("<li></li>").children(":last").addClass("barItem root clickable").text(pathParts[0]).click(function() { $this.browse(pathParts[0]); });
+		$path.html("<li></li>").children(":last").addClass("barItem root clickable").text(pathParts[0]).click(function() { $this.browse({path:pathParts[0]}); });
 		for (i=1; i<pathParts.length; i++) {
 			pathSoFar += "/" + pathParts[i];
 			$path.append("<li></li>").children(":last").addClass("barItem delim").text("/");
 			(function(pathSoFar) {
 				$path.append("<li></li>").children(":last").addClass("barItem dir clickable").text(pathParts[i]).click(function() {
-					$this.browse(pathSoFar);
+					$this.browse({path:pathSoFar});
 				});
 			})(pathSoFar);
 		}
 		
 		// Setup download-button paths
-		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+path);		
-		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+path);	
-		
+		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+opts.path);		
+		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path);	
+
+		// If the navigation bar is hidden, show it!		
 		$(".fsbar", $this).css("display","");
-		$(".infoBox", $this).remove();
+		
+		// And call the hooks
+		opts.onBrowse(data, $this);				
 	}
 });});};
 
