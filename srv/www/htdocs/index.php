@@ -46,7 +46,7 @@
 		font-weight:bold; font-size:10pt;
 		color:white;		
 		background-image: url('css/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png');
-		background-position-y: center;
+		background-position: left center;
 	}
 	ul#head li {
 		display:block; float:left; margin:0px;
@@ -59,7 +59,8 @@
 	ul#head li.devs, ul#head li.svcs, ul#head li.info {
 		padding-left: 34px; margin-left:1.5em;
 		background-repeat: no-repeat;
-		background-position-y: center; }
+		background-position: left center;
+	}
 	ul#head li.devs { background-image: url('img/24/drive.png');}
 	ul#head li.svcs { background-image: url('img/24/services.png');}
 	ul#head li.info { background-image: url('img/24/network.png');}
@@ -79,7 +80,7 @@
 	.devStat {font-size: 150%; margin-bottom:12pt;
 		padding-left: 26px;
 		background-repeat: no-repeat;
-		background-position-y: center
+		background-position: left center;
 	}
 	
 	.browser {
@@ -99,7 +100,7 @@
 		margin-right:1em;
 		padding-left:26px;
 		background-repeat: no-repeat;
-		background-position-y: center;
+		background-position: left center;
 		background-image: url('img/22/download.png');
 	}
 	
@@ -113,7 +114,7 @@
 	ul.path li.delim {margin-left:0.3em; margin-right:0.3em }
 	ul.path li.root {
 		background-repeat: no-repeat;
-		background-position-y: center;
+		background-position: left center;
 		background-image: url('img/16/drive.png');
 		height:26px; padding-left:20px;
 	}
