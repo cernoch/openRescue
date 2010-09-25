@@ -130,6 +130,7 @@
 	}
 </style>
 <link type="text/css" href="css/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
+<link type="text/css" href="css/screen.css" rel="stylesheet"/>
 
 
 </head><body>
@@ -259,6 +260,49 @@ $(function() {
 			$("#main .infoBox").css("margin","3%");
 			$("#main .infoBox .changable").html(infoText3);
 		}
+	});
+});
+
+$(function() {
+	$("#head .svcs").addClass("clickable").click(function() {
+		d = $("body").append("<div></div>").children(":last");
+		d.html("<table class='services'>"+
+			"<tr class='icons'>"+
+				"<td class='web'><img src='img/128/svc-web.png'/></td>"+
+				"<td class='ftp'><img src='img/128/svc-ftp.png'/></td>"+
+				"<td class='smb'><img src='img/128/svc-smb.png'/></td>"+
+			"</tr>"+
+			"<tr class='names'>"+
+				"<td class='web'>World Wide Web</td>"+
+				"<td class='ftp'>File Transport Protocol</td>"+
+				"<td class='smb'>Windows share</td>"+
+			"</tr>"+
+			"<tr class='state'>"+
+				"<td class='web'><div class='running'>Running</span></td>"+
+				"<td class='ftp'><div class='stopped'>Stopped</span></td>"+
+				"<td class='smb'><div class='stopped'>Stopped</span></td>"+
+			"</tr>"+
+			"</table");
+		
+		
+		a = $.ajax({
+			url:"api/service.php", type:"PUT",
+			success: function(data) {
+				a = null;
+				alert($.toJSON(data));
+				$(".state .web div", d).html("TUSOM");
+				//d.text($.toJSON(data));
+			},
+			error: function() {d.dialog("close");}
+		});
+		d.dialog({
+			modal: true,
+			width: "700px", height: "400",
+			close: function() {
+				if (a != null) a.abort();
+				d.remove();
+			}
+		});
 	});
 });
 </script>

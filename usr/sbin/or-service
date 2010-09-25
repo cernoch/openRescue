@@ -1,0 +1,66 @@
+#!/bin/bash
+
+WEB_SVC=apache2
+FTP_SVC=pure-ftpd
+SMB_SVC=samba
+
+######
+### Listing the status of running services
+######
+
+if [ "$#" = 0 ]; then
+	
+	STE=stopped
+	service "$WEB_SVC" status > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		STE=running
+	fi
+	echo "web	$STE"
+	
+	STE=stopped
+	service "$FTP_SVC" status > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		STE=running
+	fi
+	echo "ftp	$STE"
+	
+	STE=stopped
+	service "$SMB_SVC" status > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		STE=running
+	fi
+	echo "smb	$STE"
+	
+	exit
+fi
+
+######
+### Starting / stopping services
+######
+
+case "$2" in
+	start)
+	;;
+	stop)
+	;;
+	*)
+		echo "Unknown command: '$2'."
+		echo "Known commands are 'start' and 'stop'."
+		exit 1
+	;;
+esac
+
+case "$1" in
+	web)
+		service "$WEB_SVC" "$2"
+		exit
+	;;
+	ftp)
+		service "$FTP_SVC" "$2"
+		exit
+	;;
+	smb)
+		service "$SMB_SVC" "$2"
+		exit
+	;;
+esac

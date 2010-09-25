@@ -1,0 +1,28 @@
+table.services {
+	width: 100%;
+}
+
+table.services td {
+	text-align: center;
+}
+
+table.services tr.names td {
+	font-size: 150%;
+}
+
+table.services tr.state td {
+	padding-top: 1em
+}
+
+.stopped, .running {
+	text-align: left;
+	line-height:32px;
+	padding-left: 26px;
+	background-position: center left;
+	background-repeat: no-repeat;
+}
+.stopped       { background-image: url('../img/24/stop.png') }
+.running       { background-image: url('../img/24/play.png') }
+.stopped:hover { background-image: url('../img/24/play.png') }
+.running:hover { background-image: url('../img/24/stop.png') }
+
