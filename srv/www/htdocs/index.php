@@ -5,6 +5,7 @@
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
+<script type="text/javascript" src="js/iphone-style-checkboxes.js" charset="utf-8"></script> 
 <script type="text/javascript" src="mimetypes.js"></script>
 <script type="text/javascript" src="browser.js"></script>
 
@@ -129,6 +130,7 @@
 		font-size:14pt; margin-top:-3em; margin-left:2em
 	}
 </style>
+<link type="text/css" href="css/iphone-style-checkboxes.css" rel="stylesheet" charset="utf-8" /> 
 <link type="text/css" href="css/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
 <link type="text/css" href="css/screen.css" rel="stylesheet"/>
 
@@ -170,7 +172,7 @@
 			<p><span class="ui-icon ui-icon-closethick">close</span></p>
 			<div class="changable"></div>
 		</div>
-	</div>	
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -199,10 +201,11 @@ $("body").ajaxError(function(evt, data, opts, thrown) {
 			
 	$d.dialog({
 		title: data.statusText,
-		width: "70%",
 		modal: true,
-		buttons: {"Close" : function() { $d.dialog("close"); }},
-		close: function() {$d.remove();}
+		width: "700px",
+		height: "250",
+		close: function() {$d.remove();},
+		buttons: {"Close": function() { $d.dialog("close"); }}
 	});	
 });
 
@@ -282,26 +285,50 @@ $(function() {
 				"<td class='smb'>Windows share</td>"+
 			"</tr>"+
 			"<tr class='state'>"+
-				"<td class='web'><div class='running'>Running</span></td>"+
-				"<td class='ftp'><div class='stopped'>Stopped</span></td>"+
-				"<td class='smb'><div class='stopped'>Stopped</span></td>"+
+				"<td class='web'></td>"+
+				"<td class='ftp'></td>"+
+				"<td class='smb'></td>"+
 			"</tr>"+
 			"</table");
-		
-		
+				
 		a = $.ajax({
-			url:"api/service.php", type:"PUT",
+			url: "api/service.php", type:"PUT",
 			success: function(data) {
 				a = null;
-				alert($.toJSON(data));
-				$(".state .web div", d).html("TUSOM");
-				//d.text($.toJSON(data));
+				for (svc in data) { (function(svc,running) {
+					var chbox = $(".state td."+svc, d).html("<input type='checkbox'/>").children(":first").attr("checked", running);
+					chbox = chbox.iphoneStyle({
+							checkedLabel: 'Running',
+							uncheckedLabel: 'Stopped'
+					});
+				
+					$(".state td."+svc+" .iPhoneCheckContainer").click(function() {
+						var cmd = {};
+						cmd[svc] = {
+							command: chbox.is(':checked') ? "start" : "stop"
+						};
+						
+						$.ajax({
+							url: "api/service.php", type:"PUT",
+							data: $.toJSON(cmd),
+							global: false,
+							success: function(update) {
+								chbox.attr("checked", update[svc].status == "running").change();
+							},
+							error: function(err) {
+								chbox.attr("checked", !chbox.is(":checked")).change();
+							}
+						});
+						
+					});
+				})(svc,data[svc].status == "running");}
+				$(".state .web :checkbox",d).attr("disabled","disabled");
 			},
 			error: function() {d.dialog("close");}
 		});
 		d.dialog({
 			modal: true,
-			width: "700px", height: "400",
+			width: "700px", height: "300",
 			close: function() {
 				if (a != null) a.abort();
 				d.remove();
