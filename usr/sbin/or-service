@@ -1,8 +1,8 @@
 #!/bin/bash
 
 WEB_SVC=apache2
-FTP_SVC=pure-ftpd
-SMB_SVC=samba
+FTP_SVC=bftpd
+SMB_SVC=smb
 
 ######
 ### Listing the status of running services
