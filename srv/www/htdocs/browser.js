@@ -128,7 +128,16 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		
 		// Setup download-button paths
 		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+opts.path).click(function() {opts.onBackup(opts.path);});		
-		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path).click(function() {opts.onBackup(opts.path);});	
+		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path).click(function() {
+			if (confirm("WARNING: Creating an ZIP archive can consume a lot of memory.\n\n"+
+					"Make sure your RAM memory is at least twice as big as the archive. "+
+					"This limitation should be removed in future versions.\n\n"+
+					"Do you still want to continue?")) {
+				opts.onBackup(opts.path);
+				return true;
+			} else
+				return false;
+		});	
 
 		// If the navigation bar is hidden, show it!		
 		$(".fsbar", $this).css("display","");
