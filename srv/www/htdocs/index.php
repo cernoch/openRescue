@@ -264,7 +264,6 @@ $(function() {
 			$("#main .infoBox .changable").html(infoText3);
 		},
 		onBackup: function() {
-			alert("TUSOM");
 			$("#main .infoBox").remove();
 		}
 	});	
@@ -291,37 +290,36 @@ $(function() {
 			"</tr>"+
 			"</table");
 				
-		a = $.ajax({
+		var a = $.ajax({ // Keep track of the AJAX request to cancel it...
 			url: "api/service.php", type:"PUT",
 			success: function(data) {
-				a = null;
+				a = null; // Reset the request
 				for (svc in data) { (function(svc,running) {
+					// For each service create an iPhone check-box
 					var chbox = $(".state td."+svc, d).html("<input type='checkbox'/>").children(":first").attr("checked", running);
-					chbox = chbox.iphoneStyle({
-							checkedLabel: 'Running',
-							uncheckedLabel: 'Stopped'
-					});
-				
+					chbox = chbox.iphoneStyle({ checkedLabel: 'Running', uncheckedLabel: 'Stopped' });
+
+					// If the user clicks the iphone-checkbox...
 					$(".state td."+svc+" .iPhoneCheckContainer").click(function() {
-						var cmd = {};
-						cmd[svc] = {
-							command: chbox.is(':checked') ? "start" : "stop"
-						};
+						var cmd = {}; // Prepare the AJAX request
+						cmd[svc] = { command: chbox.is(':checked') ? "start" : "stop" };
 						
-						$.ajax({
+						$.ajax({ // Send the request
 							url: "api/service.php", type:"PUT",
 							data: $.toJSON(cmd),
-							global: false,
-							success: function(update) {
+							global: false, // ignore global errors
+							success: function(update) { // Update checkbox according to the new state 
 								chbox.attr("checked", update[svc].status == "running").change();
 							},
-							error: function(err) {
+							error: function(err) { // Revert the checkbox to its original state
 								chbox.attr("checked", !chbox.is(":checked")).change();
 							}
 						});
 						
 					});
 				})(svc,data[svc].status == "running");}
+				
+				// Disable the "WEB" checkbox (to prevent cutting-off the client)
 				$(".state .web :checkbox",d).attr("disabled","disabled");
 			},
 			error: function() {d.dialog("close");}

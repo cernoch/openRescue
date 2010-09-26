@@ -1,22 +1,6 @@
-table.services {
-	width: 100%;
-}
-
-table.services td {
-	text-align: center;
-}
-
-table.services tr.names td {
-	font-size: 130%;
-	font-weight: bold;
-}
-
-table.services tr.state td {
-	padding-top: 1em
-}
-
-.state td * {
-	margin:0px auto;
-}
-
+table.services { width: 100%; }
+table.services td { text-align: center; }
+table.services tr.names td { font-size: 130%; font-weight: bold; }
+table.services tr.state td { padding-top: 1em; }
+table.services tr.state td * { margin:0px auto; }
 
