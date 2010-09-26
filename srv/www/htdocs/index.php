@@ -131,7 +131,7 @@
 	}
 </style>
 <link type="text/css" href="css/iphone-style-checkboxes.css" rel="stylesheet" charset="utf-8" /> 
-<link type="text/css" href="css/redmond/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
+<link type="text/css" href="css/ui-lightness/jquery-ui-1.8.5.custom.css" rel="stylesheet"/>
 <link type="text/css" href="css/screen.css" rel="stylesheet"/>
 
 
@@ -146,7 +146,7 @@
 	
 <div id='side' class='devices layout'>
 	<div class="infoBox ui-widget">
-		<div class="ui-state-highlight ui-corner-all"> 
+		<div class="ui-state-error ui-corner-all"> 
 			<p><span class="ui-icon ui-icon-alert">Warning</span>
 			<span class="ui-icon ui-icon-closethick">Close</span>
 			<strong>Be careful!</strong></p>
@@ -344,17 +344,17 @@ $(function() {
 		var a = $.ajax({ // Keep track of the AJAX request to cancel it...
 			url: "api/ipaddr.php", type:"PUT",
 			success: function(data) {
-				alert($.toJSON(data));
 				a = null; // Reset the request
 				for (i in data) { (function(ip) {
-						alert(ip);
+					var smb_url = navigator.appVersion.toLowerCase().indexOf('win') != -1
+					            ? "\\\\"+ip : "smb://"+ip;
 					$("table",d).append(
 						"<tr>"+
 							"<th>"+ip+"</th>"+
 							"<td>"+
 								"<div class='web'><a href='http://"+ip+"'>http://"+ip+"</a></div>"+
 								"<div class='ftp'><a href='ftp://"+ip+"'>ftp://"+ip+"</a></div>"+
-								"<div class='smb'><a href='smb://"+ip+"'>smb://"+ip+"</a></div>"+
+								"<div class='smb'><a href='"+smb_url+"'>"+smb_url+"</a></div>"+
 						"</tr>");
 				})(data[i]);}
 				
