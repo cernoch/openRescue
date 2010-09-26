@@ -288,7 +288,7 @@ $(function() {
 				"<td class='ftp'></td>"+
 				"<td class='smb'></td>"+
 			"</tr>"+
-			"</table");
+			"</table>");
 				
 		var a = $.ajax({ // Keep track of the AJAX request to cancel it...
 			url: "api/service.php", type:"PUT",
@@ -327,6 +327,46 @@ $(function() {
 		d.dialog({
 			modal: true,
 			width: "700px", height: "300",
+			close: function() {
+				if (a != null) a.abort();
+				d.remove();
+			}
+		});
+	});
+});
+
+
+$(function() {
+	$("#head .info").addClass("clickable").click(function() {
+		d = $("body").append("<div></div>").children(":last");
+		d.html("<table class='iplist'></table>");
+				
+		var a = $.ajax({ // Keep track of the AJAX request to cancel it...
+			url: "api/ipaddr.php", type:"PUT",
+			success: function(data) {
+				alert($.toJSON(data));
+				a = null; // Reset the request
+				for (i in data) { (function(ip) {
+						alert(ip);
+					$("table",d).append(
+						"<tr>"+
+							"<th>"+ip+"</th>"+
+							"<td>"+
+								"<div class='web'><a href='http://"+ip+"'>http://"+ip+"</a></div>"+
+								"<div class='ftp'><a href='ftp://"+ip+"'>ftp://"+ip+"</a></div>"+
+								"<div class='smb'><a href='smb://"+ip+"'>smb://"+ip+"</a></div>"+
+						"</tr>");
+				})(data[i]);}
+				
+				// Disable the "WEB" checkbox (to prevent cutting-off the client)
+				$(".state .web :checkbox",d).attr("disabled","disabled");
+			},
+			error: function() {d.dialog("close");}
+		});
+		d.dialog({
+			modal: true,
+			width: "400px", height: "250",
+			title: "List of IP addresses",
 			close: function() {
 				if (a != null) a.abort();
 				d.remove();
