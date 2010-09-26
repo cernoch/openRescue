@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>jQuery UI Example Page</title>
+<title>Web view - openRescue </title>
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.json-2.2.min.js"></script>
@@ -198,12 +198,12 @@ $("body").ajaxError(function(evt, data, opts, thrown) {
 	if (data.resonseText != undefined) $("pre",$d).prepend("<p>Server resonse:</p>");
 			
 	$d.dialog({
-		title : data.statusText,
-		width : "70%",
-		modal : true,
-		buttons:{ "Close" : function() { $d.dialog("close"); } },
-		close : function() {$d.remove();}
-	});
+		title: data.statusText,
+		width: "70%",
+		modal: true,
+		buttons: {"Close" : function() { $d.dialog("close"); }},
+		close: function() {$d.remove();}
+	});	
 });
 
 // USER INTERFACE: Show/hide of the "sidebar"
@@ -247,20 +247,24 @@ var infoText3 =
 "<p class='stepNum'>Step 3.</p>"+
 "<p class='stepData'>Display the folder you want to backup and click on the "+
 "<img src='img/22/download.png' style='width:1em; height:1em'/> "+
-"icon to download it.</p>";
+"icon to start the download.</p>";
 
 
 $(function() {
 	$("#main .infoBox .changable").html(infoText1);
 	$("#side .devices").loadDevices({
-		onMount : function() {
+		onMount: function() {
 			$("#main .infoBox .changable").html(infoText2);
 		},
-		onBrowse : function() {
+		onBrowse: function() {
 			$("#main .infoBox").css("margin","3%");
 			$("#main .infoBox .changable").html(infoText3);
+		},
+		onBackup: function() {
+			alert("TUSOM");
+			$("#main .infoBox").remove();
 		}
-	});
+	});	
 });
 
 $(function() {

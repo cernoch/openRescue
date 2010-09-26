@@ -4,7 +4,8 @@
 $.fn.loadDevices = function(options) { return this.each(function() { $this=$(this);
 	var opts = jQuery.extend({
 		onMount: function() {},
-		onBrowse: function() {}
+		onBrowse: function() {},
+		onBackup: function() {}
 	}, options); $.ajax({
 
 	url:"api/list.php",
@@ -32,6 +33,7 @@ $.fn.loadDevices = function(options) { return this.each(function() { $this=$(thi
 					$("#main").browse({
 						path: $(".devName", $(this).parents(".device")).text(),
 						onBrowse: opts.onBrowse,
+						onBackup: opts.onBackup
 					});	
 				});
 			}
@@ -67,7 +69,8 @@ $.fn.loadDevices = function(options) { return this.each(function() { $this=$(thi
 $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 	var opts = jQuery.extend({
 		path: "/",
-		onBrowse: function() {}
+		onBrowse: function() {},
+		onBackup: function() {}
 	}, options); $.ajax({
 
 	url:"api/dir.php", type:"PUT",
@@ -124,8 +127,8 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		}
 		
 		// Setup download-button paths
-		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+opts.path);		
-		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path);	
+		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+opts.path).click(function() {opts.onBackup(opts.path);});		
+		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path).click(function() {opts.onBackup(opts.path);});	
 
 		// If the navigation bar is hidden, show it!		
 		$(".fsbar", $this).css("display","");

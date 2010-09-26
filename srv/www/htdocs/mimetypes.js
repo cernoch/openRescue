@@ -214,7 +214,7 @@ mime['application/x-directory'] = '../d.png';
 mime['application/x-symlink'] = 'application-x-desktop.png';
 mime['application/x-empty'] = 'x-office-document.png';
 mime['application/x-troff'] = 'text-troff.png';
-mime['application/x-iso9660-image'] = 'application/x-cd-image.png';
+mime['application/x-iso9660-image'] = 'application-x-cd-image.png';
 // Programming
 mime['text/x-c'] = 'text-x-csrc.png';
 mime['text/x-c++'] = 'text-x-c++src.png';
