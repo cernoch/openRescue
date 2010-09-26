@@ -3,31 +3,27 @@ header('Cache-Control: no-cache, must-revalidate');
 
 $data = json_decode(file_get_contents('php://input'));
 
-if ($data == null) {
-	header("x", true, 415);
-	header('Content-type: text/plain');
-	echo "Request is not in JSON format.";
-	die;
-}
-
 // For all given services, execute the given command
-foreach ($data as $service => $params) {
-	if (isset($params->command)) {
-		$command = "sudo or-service ".escapeshellcmd($service)." ".escapeshellcmd($params->command);
-		exec($command, $results, $retval);
-		// If the command failed, stop the script and show the result
-		if ($retval != 0) {
-			header("x", true, 500);
-			header('Content-type: text/plain');
-			echo implode("\n", $results);
-			die;
-		} else {
-			$data->{$service}->stdout = implode("\n", $results);
+
+if ($data != null)
+	foreach ($data as $service => $params) {
+		if (isset($params->command)) {
+			$command = "sudo or-service ".escapeshellcmd($service)." ".escapeshellcmd($params->command);
+			exec($command, $results, $retval);
+			// If the command failed, stop the script and show the result
+			if ($retval != 0) {
+				header("x", true, 500);
+				header('Content-type: text/plain');
+				echo implode("\n", $results);
+				die;
+			} else {
+				$data->{$service}->stdout = implode("\n", $results);
+			}
+			unset($results);
+			unset($retval);
 		}
-		unset($results);
-		unset($retval);
 	}
-}
+
 
 exec("sudo or-service", $results, $retval);
 
