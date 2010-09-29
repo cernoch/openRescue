@@ -21,6 +21,7 @@ function viewNetworkInfo() {
 				for (i in data) { (function(ip) {
 					var smb_url = navigator.appVersion.toLowerCase().indexOf('win') != -1
 								? "\\\\"+ip : "smb://"+ip;
+					smb_url+= "/rescue";
 					$("table",d).append(
 						"<tr>"+
 							"<th>"+ip+"</th>"+
