@@ -11,7 +11,7 @@
 
 <style type="text/css">
 	/*demo page css*/
-	body {font: 10pt "Droid Sans", sans-serif; margin: 0px; cursor: default}
+	body {font: 11pt "Droid Sans", sans-serif; margin: 0px; cursor: default}
 	a {color: inherit; text-decoration: none}
 	
 	.demoHeaders { margin-top: 2em; }
@@ -121,12 +121,12 @@
 	
 	.infoBox .ui-icon-closethick {float:right}
 	
-	.infoBox .changable .stepNum {
+	.infoBox .content .stepNum {
 		line-height:60pt; font-size:60pt; 
 		color:#d5bf30; font-family:"Arial Black"; font-weight:bold;
 		margin:0.2em; padding:0px;
 	}
-	.infoBox .changable .stepData {
+	.infoBox .content .stepData {
 		font-size:14pt; margin-top:-3em; margin-left:2em
 	}
 </style>
@@ -150,9 +150,10 @@
 			<p><span class="ui-icon ui-icon-alert">Warning</span>
 			<span class="ui-icon ui-icon-closethick">Close</span>
 			<strong>Be careful!</strong></p>
-			<p>All your online drives are accessible to anyone in your
-			network. Make sure there are no unauthorized users of your network,
-			who might steal or delete your data.</p>
+			<p>All your <em>Online</em> drives are accessible to
+				<strong>anyone</strong> in your network.
+				Make sure there are no unauthorized users of your network,
+				who might steal or delete your data.</p>
 		</div>
 	</div>
 
@@ -170,7 +171,7 @@
 	<div class="infoBox ui-widget" style="margin:10%">
 		<div class="ui-state-highlight ui-corner-all"> 
 			<p><span class="ui-icon ui-icon-closethick">close</span></p>
-			<div class="changable"></div>
+			<div class="content"></div>
 		</div>
 	</div>
 </div>
@@ -233,38 +234,46 @@ $(function() {
 	});
 });
 
-var infoText1 =
+var infoText = [
 "<p class='stepNum'>Step 1.</p>"+
 "<p class='stepData'>Click on the <strong>"+
 "<img src='img/22/online.png' style='width:1em; height:1em'/> Offline"+
 "</strong> label next to one of your drives."+
-"This will switch the drive to online mode.</p>";
+"This will switch the drive to online mode.</p>",
 
-var infoText2 =
 "<p class='stepNum'>Step 2.</p>"+
 "<p class='stepData'>Browse the drive by clicking on the "+
 "<img src='img/64/drive.png' style='width:1em; height:1em'/> "+
-"icon above the drive's name.</p>";
+"icon above the drive's name.</p>",
 
-var infoText3 =
 "<p class='stepNum'>Step 3.</p>"+
 "<p class='stepData'>Display the folder you want to backup and click on the "+
 "<img src='img/22/download.png' style='width:1em; height:1em'/> "+
-"icon to start the download.</p>";
+"icon to start the download.</p>"];
 
 
 $(function() {
-	$("#main .infoBox .changable").html(infoText1);
+	var curStat = 0;
+	var infoBox = $("#main .infoBox");
+	var content = $(".content", infoBox).html(infoText[curStat]);
+	// Load the list of devices...
 	$("#side .devices").loadDevices({
-		onMount: function() {
-			$("#main .infoBox .changable").html(infoText2);
+		onMount: function(info) {
+			//alert("onMount:" + curStat);
+			if (info.stat == "mounted") {
+				curStat = curStat < 1 ? 1 : curStat;
+				content.html(infoText[curStat]);
+			}
 		},
-		onBrowse: function() {
-			$("#main .infoBox").css("margin","3%");
-			$("#main .infoBox .changable").html(infoText3);
+		onBrowse: function(info) {
+			//alert("onBrowse:" + curStat);
+			curStat = curStat < 2 ? 2 : curStat;
+			infoBox.css("margin","3%");
+			content.html(infoText[curStat]);
 		},
 		onBackup: function() {
-			$("#main .infoBox").remove();
+			//alert("onBackup:" + curStat);
+			infoBox.remove();
 		}
 	});	
 });
@@ -289,7 +298,7 @@ $(function() {
 				"<td class='smb'></td>"+
 			"</tr>"+
 			"</table>");
-				
+
 		var a = $.ajax({ // Keep track of the AJAX request to cancel it...
 			url: "api/service.php", type:"PUT",
 			success: function(data) {
@@ -320,13 +329,14 @@ $(function() {
 				})(svc,data[svc].status == "running");}
 				
 				// Disable the "WEB" checkbox (to prevent cutting-off the client)
-				$(".state .web :checkbox",d).attr("disabled","disabled");
+				$(".state .web :checkbox",d).attr("disabled","disabled").change();
 			},
 			error: function() {d.dialog("close");}
 		});
 		d.dialog({
 			modal: true,
 			width: "700px", height: "300",
+			title: "Available services for data backup",
 			close: function() {
 				if (a != null) a.abort();
 				d.remove();
@@ -335,37 +345,68 @@ $(function() {
 	});
 });
 
+function alertText(message) {
+	return "<div class='ui-widget'><div class='ui-state-error ui-corner-all'>"
+			+"<p><span class='ui-icon ui-icon-alert'></span>"+message+"</p>"
+			+"</div></div>";
+}
 
 $(function() {
 	$("#head .info").addClass("clickable").click(function() {
 		d = $("body").append("<div></div>").children(":last");
-		d.html("<table class='iplist'></table>");
+		d.html("<p></p><table class='iplist'></table>");
+		d.children("p").html("You can access your data from any"+
+			" computer on your local network by using one of the following"+
+			" addresses:");
 				
 		var a = $.ajax({ // Keep track of the AJAX request to cancel it...
 			url: "api/ipaddr.php", type:"PUT",
 			success: function(data) {
 				a = null; // Reset the request
-				for (i in data) { (function(ip) {
-					var smb_url = navigator.appVersion.toLowerCase().indexOf('win') != -1
-					            ? "\\\\"+ip : "smb://"+ip;
-					$("table",d).append(
-						"<tr>"+
-							"<th>"+ip+"</th>"+
-							"<td>"+
-								"<div class='web'><a href='http://"+ip+"'>http://"+ip+"</a></div>"+
-								"<div class='ftp'><a href='ftp://"+ip+"'>ftp://"+ip+"</a></div>"+
-								"<div class='smb'><a href='"+smb_url+"'>"+smb_url+"</a></div>"+
-						"</tr>");
-				})(data[i]);}
 				
-				// Disable the "WEB" checkbox (to prevent cutting-off the client)
-				$(".state .web :checkbox",d).attr("disabled","disabled");
+				// If no IP address is found...
+				if (data.length == 0) {
+					$("p",d).remove();
+					$("table",d).html("<tr><td>"+alertText("<b>No IP address found.</b> "+
+						"Check your network connection using NetworkManager in the system statusbar.")+"</td></tr>");
+					
+				} else {					
+					// Populate the table with data...
+					for (i in data) { (function(ip) {
+						var smb_url = navigator.appVersion.toLowerCase().indexOf('win') != -1
+									? "\\\\"+ip : "smb://"+ip;
+						$("table",d).append(
+							"<tr>"+
+								"<th>"+ip+"</th>"+
+								"<td>"+
+									"<div class='web'><a href='http://"+ip+"'>http://"+ip+"</a></div>"+
+									"<div class='ftp'><a href='ftp://"+ip+"'>ftp://"+ip+"</a></div>"+
+									"<div class='smb'><a href='"+smb_url+"'>"+smb_url+"</a></div>"+
+							"</tr>");
+					})(data[i]);}
+					
+					
+					// Disable the "WEB" checkbox (to prevent cutting-off the client)
+					$(".state .web :checkbox",d).attr("disabled","disabled");
+					
+					// Disable URLs of offline services
+					$.ajax({
+						url: "api/service.php", type:"PUT", global: false,
+						success: function(data) {
+							for (svc in data) { (function(svc,running) {
+								if (!running)
+									$("."+svc,d).slideUp(3000);
+							})(svc,data[svc].status == "running");}
+						}
+					});
+				}
+				
 			},
 			error: function() {d.dialog("close");}
 		});
 		d.dialog({
 			modal: true,
-			width: "400px", height: "250",
+			width: "400px", height: "300",
 			title: "List of IP addresses",
 			close: function() {
 				if (a != null) a.abort();

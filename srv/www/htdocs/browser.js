@@ -10,9 +10,12 @@ $.fn.loadDevices = function(options) { return this.each(function() { $this=$(thi
 
 	url:"api/list.php",
 	success: function(data) {
-		$view = $this.children("tbody").html(""); /* TODO: Refactor the variable to $body */
+		var $view = $this.children("tbody").html(""); /* TODO: Refactor the variable to $body */
+		var count = 0;
+		
 		// Add each drive into the table
-		for (i in data) {
+		for (i in data) {count++;
+			
 			$row = $view.append("<tr class='device'></tr>").children(":last");
 					
 			$td = $row.append("<td class='devIcon'/>").children(":last");
@@ -57,10 +60,13 @@ $.fn.loadDevices = function(options) { return this.each(function() { $this=$(thi
 				data: $.toJSON(data),
 				success: function(result) {
 					opts.onMount(result);
-					$this.loadDevices();
+					$this.loadDevices(options);
 				}
 			});
 		});
+		
+		if (count == 0)
+			$view.html("<tr><td>"+alertText("<strong>No drives recognized in your computer.</strong>")+"</td></tr>");
 	}
 });});};
 
@@ -85,7 +91,11 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 			$row = $b.append("<tr/>").children(":last");
 			$row.append("<td/>").children(":last").html("<img/>").children(":last").css("cursor","pointer").attr("src","img/16/up.png");
 			$row.append("<td/>").children(":last").text("..").css("cursor","pointer").click(function() {
-				$this.browse({path: opts.path.substr(0,opts.path.lastIndexOf("/"))});
+				$this.browse({
+					path: opts.path.substr(0,opts.path.lastIndexOf("/")),
+					onBrowse: opts.onBrowse,
+					onBackup: opts.onBackup
+				});
 			});
 			$row.append("<td/>").children(":last").text(" ");
 		}				
@@ -93,7 +103,7 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		// Populate the table
 		$.each(data.entries, function(i,e) {
 			var fullpath = opts.path+"/"+e.name;
-			function deeper() { $this.browse({path:fullpath}); }
+			function deeper() { $this.browse({path: fullpath, onBrowse: opts.onBrowse, onBackup: opts.onBackup }); }
 			function display() { window.open("api/get.php/"+fullpath,'welcome',''); return false; }
 			
 			var mtyp = mime[e.mime]; // Lookup the icon name
@@ -115,20 +125,30 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		pathSoFar = pathParts[0];
 		
 		$path = $(".path", $this);
-		$path.html("<li></li>").children(":last").addClass("barItem root clickable").text(pathParts[0]).click(function() { $this.browse({path:pathParts[0]}); });
+		$path.html("<li></li>").children(":last").addClass("barItem root clickable").text(pathParts[0]).click(function() {
+			$this.browse({
+				path:pathParts[0],
+				onBrowse: opts.onBrowse,
+				onBackup: opts.onBackup
+			});
+		});
 		for (i=1; i<pathParts.length; i++) {
 			pathSoFar += "/" + pathParts[i];
 			$path.append("<li></li>").children(":last").addClass("barItem delim").text("/");
 			(function(pathSoFar) {
 				$path.append("<li></li>").children(":last").addClass("barItem dir clickable").text(pathParts[i]).click(function() {
-					$this.browse({path:pathSoFar});
+					$this.browse({path: pathSoFar, onBrowse: opts.onBrowse, onBackup: opts.onBackup});
 				});
 			})(pathSoFar);
 		}
 		
 		// Setup download-button paths
-		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+opts.path).click(function() {opts.onBackup(opts.path);});		
-		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path).click(function() {
+		var temp; // TODO: This is an ugly hack to remove listeners...
+		temp = $(".download.tgz", $this).html(); $(".download.tgz", $this).html(temp);
+		temp = $(".download.zip", $this).html(); $(".download.zip", $this).html(temp);		
+		
+		$(".download.tgz a", $this).attr("href","api/pack.php/tgz/"+opts.path).unbind().click(function() {opts.onBackup(opts.path);});		
+		$(".download.zip a", $this).attr("href","api/pack.php/zip/"+opts.path).unbind().click(function() {
 			if (confirm("WARNING: Creating an ZIP archive can consume a lot of memory.\n\n"+
 					"Make sure your RAM memory is at least twice as big as the archive. "+
 					"This limitation should be removed in future versions.\n\n"+
@@ -142,7 +162,7 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		// If the navigation bar is hidden, show it!		
 		$(".fsbar", $this).css("display","");
 		
-		// And call the hooks
+		// And call the hooks		
 		opts.onBrowse(data, $this);				
 	}
 });});};
