@@ -171,6 +171,38 @@ $(function() {
 	$("#side .buttonRefresh").button().click(refreshDevices);
 });
 
+// If the network is not connected during boot, show the overlay.
+// Hide the overlay when the machine goes on-line...
+var netCheckTimer = null; 
+function netCheckWorker() {
+	netCheckTimer = null;
+	$.ajax({url: "api/ipaddr.php", type:"PUT", global:false, success: function(data) {
+		if (data.length != 0)
+			$.unblockUI();
+		else
+			netCheckTimer = setTimeout("netCheckWorker()", 3000);
+	}});
+}
+$(function() {
+	$.ajax({url: "api/ipaddr.php", type:"PUT", global:false, success: function(data) {
+		if (data.length == 0) {
+			$.blockUI({message: "<h1>No network connection...</h1>"+
+				"<p><strong>Do not panic! This is normal!</strong></p>"+
+				"<p style='text-align:left; margin:1em'>After you start your computer, usually the network is offline."+
+				" In order to backup your data over network, you must setup the network using <em>NetworkManager</em>."+
+				" Its icon is located in the bottom-right corner of the screen, next to the clock." 
+			});
+			
+			netCheckTimer = setTimeout("netCheckWorker()", 5000);
+	
+			$(".blockUI.blockPage").append("<button>Ignore</button><div style='height:1em'/>").children("button:last").button().click(function() {
+				if (netCheckTimer != null) clearTimeout(netCheckTimer);
+				$.unblockUI();
+			});
+		}
+	}});
+});
+
 function alertText(message) {
 	return "<div class='ui-widget'><div class='ui-state-error ui-corner-all'>"
 			+"<p><span class='ui-icon ui-icon-alert'></span>"+message+"</p>"

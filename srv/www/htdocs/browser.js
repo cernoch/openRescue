@@ -71,9 +71,9 @@ $.fn.loadDevices = function(options) { return this.each(function() { $this=$(thi
 		if (count == 0) $view.html("<tr><td>"+alertText("<strong>No drives recognized in your computer.</strong>")+"</td></tr>");
 		
 		// Enable the UI
-		opts.toBlock.unblock();
+		opts.toBlock.unblock().css("position",null);
 	},
-	error: function() { opts.toBlock.unblock(); }
+	error: function() { opts.toBlock.unblock().css("position",null); }
 });});};
 
 
