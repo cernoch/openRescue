@@ -3,10 +3,13 @@
  */
 $.fn.loadDevices = function(options) { return this.each(function() { $this=$(this);
 	var opts = jQuery.extend({
+		toBlock: $this,
 		onMount: function() {},
 		onBrowse: function() {},
 		onBackup: function() {}
-	}, options); $.ajax({
+	}, options);
+	opts.toBlock.block({message:""}); // Disable the UI
+	$.ajax({
 
 	url:"api/list.php",
 	success: function(data) {
@@ -65,9 +68,12 @@ $.fn.loadDevices = function(options) { return this.each(function() { $this=$(thi
 			});
 		});
 		
-		if (count == 0)
-			$view.html("<tr><td>"+alertText("<strong>No drives recognized in your computer.</strong>")+"</td></tr>");
-	}
+		if (count == 0) $view.html("<tr><td>"+alertText("<strong>No drives recognized in your computer.</strong>")+"</td></tr>");
+		
+		// Enable the UI
+		opts.toBlock.unblock();
+	},
+	error: function() { opts.toBlock.unblock(); }
 });});};
 
 
@@ -77,7 +83,9 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		path: "/",
 		onBrowse: function() {},
 		onBackup: function() {}
-	}, options); $.ajax({
+	}, options);
+	$this.block({message:""}); // Disable the UI
+	$.ajax({
 
 	url:"api/dir.php", type:"PUT",
 	data: $.toJSON({path:opts.path}),
@@ -163,8 +171,12 @@ $.fn.browse = function(options) {return this.each(function() { $this=$(this);
 		$(".fsbar", $this).css("display","");
 		
 		// And call the hooks		
-		opts.onBrowse(data, $this);				
-	}
+		opts.onBrowse(data, $this);		
+		
+		// Enable the UI
+		$this.unblock();
+	},
+	error: function() { $this.unblock(); }
 });});};
 
 /*

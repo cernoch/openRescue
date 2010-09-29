@@ -51,7 +51,7 @@ header("Content-Type: {$file["mime"]}");
 header("Content-Length: {$file["size"]}");
 header("Content-Disposition: inline; filename=".escHttp($file["name"]));
 
-passthru("sudo cat ".escSh("/mnt".$path));
+passthru("sudo cat -- ".escSh("/mnt".$path));
 
 //header('Content-type: application/json');
 //echo json_encode($data);

@@ -5,12 +5,12 @@ FILE="`basename \"$REQUEST\"`"
 cd "$BASE"
 
 if [ "$1" = "tgz" ]; then
-	tar cz --numeric-owner "$FILE"
+	tar cz --numeric-owner -- "$FILE"
 	exit
 fi
 
 if [ "$1" = "zip" ]; then
-	zip -rq - "$FILE"
+	zip -rq - -- "$FILE"
 	exit
 fi
 

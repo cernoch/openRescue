@@ -1,13 +1,128 @@
-table.services { width: 100%; }
-table.services td { text-align: center; }
-table.services tr.names td { font-size: 130%; font-weight: bold; }
-table.services tr.state td { padding-top: 1em; }
-table.services tr.state td * { margin:0px auto; }
+body {font: 11pt "Droid Sans", sans-serif; margin: 0px; cursor: default}
+a {color: inherit; text-decoration: none}
 
-table.iplist { width: 100% }
-table.iplist th, table.iplist td { padding:1em; width: 50% }  
+.demoHeaders { margin-top: 2em; }
+#dialog_link {padding: .4em 1em .4em 20px;text-decoration: none;position: relative;}
+#dialog_link span.ui-icon {margin: 0 5px 0 0;position: absolute;left: .2em;top: 50%;margin-top: -8px;}
+ul#icons {margin: 0; padding: 0;}
+ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+ul#icons span.ui-icon {float: left; margin: 0 4px;}
+
+.ui-state-error, .ui-state-highlight {padding: 0 .7em}			
+.ui-state-error .ui-icon, .ui-state-highlight .ui-icon {float: left; margin-right: .3em}
+
+.ui-widget { font-family: "Droid Sans", sans-serif; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button	{ font-family: "Droid Sans", sans-serif; }
+
+/* Helpers */
+.link {text-decoration:underline}
+.clickable {cursor:pointer}
+.clickable:hover {text-decoration:underline}
+
+/* Basic layout */
+.layout {position:fixed; margin:0px; padding:0px; overflow: auto}
+#head {right:0px;    left:0px; height:36px;    top:0px; overflow:hidden}
+#side {width:300px;  left:0px;    top:37px; bottom:0px}
+#main { left:301px; right:0px;    top:37px; bottom:0px}
+
+/* Borders */
+#side {border-right: 1px solid #667483}
+#head {border-bottom: 1px solid #667483}
+
+/* The head */
+ul#head {
+	font-weight:normal; font-size:10pt;
+	background-image: url('../img/head-bg.png');
+	background-position: left center;
+}
+ul#head li {
+	display:block; float:left; margin:0px;
+	padding:0px; padding-left:2em; padding-right:2em;
+	border-right: 1px solid #86A4B3;	
+	height:36px; line-height:36px;
+}
+ul#head li.ajax {float:right; padding: 2px}
+ul#head li.devs, ul#head li.svcs, ul#head li.info {
+	padding-left: 34px; margin-left:1.5em;
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+ul#head li.devs {background-image: url('../img/24/drive.png')}
+ul#head li.svcs {background-image: url('../img/24/services.png')}
+ul#head li.info {background-image: url('../img/24/network.png')}
+
+#side .buttonRefresh {float:right; margin-right:20px}
+
+div.devices > * {margin: 8pt}
+.device > td {padding-bottom:1em}
+		
+.devIcon {text-align: center}
+.devName {font-weight: bold}
+.devDetails {margin:4pt; color:#666; font-size: 80%}}
+.devDetails th {text-align:right; display:none}							
+	
+.devStat.online  {background-image: url('../img/22/online.png');}			
+.devStat.offline {background-image: url('../img/22/offline.png');}						
+.devStat {font-size: 150%; margin-bottom:12pt;
+	padding-left: 26px;
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+
+.browser {
+	width:100%;
+	border-top: 1px solid #CCC;
+	border-collapse:collapse;
+}
+.browser tr > td:first-child {width:16px}
+.browser tr > td:first-child + td + td,
+.browser tr > th:first-child + th {width:8em}
+.browser tr.odd  {background-color: #EEE}
+.browser tr.even {background-color: #DDD}
+
+.fsbar .barItem {height:26px; line-height:26px;}
+.fsbar .download {
+	float:right; display:block;
+	margin-right:1em;
+	padding-left:26px;
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-image: url('../img/22/download.png');
+}
+
+ul.path {
+	margin:0px; padding:0px;
+	padding-left: 1em;
+	list-style: none;
+	font-family: "Droid Sans Mono", monospace;
+}
+ul.path li {float:left;}
+ul.path li.delim {margin-left:0.3em; margin-right:0.3em }
+ul.path li.root {
+	background-repeat: no-repeat;
+	background-position: left center;
+	background-image: url('../img/16/drive.png');
+	height:26px; padding-left:20px;
+}
+
+.infoBox .ui-icon-closethick {float:right}
+.infoBox .content .stepData {font-size:14pt; margin-top:-3em; margin-left:2em}
+.infoBox .content .stepNum {
+	line-height:60pt; font-size:60pt; 
+	color:#d5bf30; font-family:"Arial Black"; font-weight:bold;
+	margin:0.2em; padding:0px;
+}
+
+
+table.services {width: 100%}
+table.services td {text-align: center}
+table.services tr.names td {font-size: 130%; font-weight: bold}
+table.services tr.state td {padding-top: 1em}
+table.services tr.state td * {margin:0px auto}
+
+table.iplist {width: 100%}
+table.iplist th, table.iplist td {padding:1em; width: 50%}  
 table.iplist th {text-align: right; font-size:180%;}
-
 table.iplist td {font-size: 80%; color: #555}
 
 /*
