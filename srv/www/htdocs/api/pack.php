@@ -1,7 +1,5 @@
 <?php
-header("Expires: 0");
-header("Pragma: public");
-header("Cache-Control: no-cache, must-revalidate");
+require_once("common.php");
 
 $path = $_SERVER["PATH_INFO"];
 $part = explode("/", $path);
@@ -17,14 +15,14 @@ if (sizeof($part) < 2) {
 
 $type = $part[0]; array_shift($part);
 $file = $part[sizeof($part)-1];
-$path = implode("/",$part); unset($part); 
+$path = implode("/",$part); unset($part);
 
 if ($type == "tgz") {
 	header("Content-Type: application/x-gtar");
-	header("Content-Disposition: attachment; filename=\"".urlencode($file.".tar.gz")."\"");
+	header("Content-Disposition: attachment; filename=".escHttp($file.".tar.gz"));
 } else if ($type == "zip") {
 	header("Content-Type: application/zip");
-	header("Content-Disposition: attachment; filename=\"".urlencode($file.".zip")."\"");
+	header("Content-Disposition: attachment; filename=".escHttp($file.".zip"));
 
 } else {
 	header("x", true, 415);
@@ -34,5 +32,5 @@ if ($type == "tgz") {
 }
 		
 header("Content-Transfer-Encoding: binary");
-passthru("sudo or-pack ".escapeshellarg($type)." ".escapeshellarg($path));
+passthru("sudo or-pack ".escSh($type)." ".escSh($path));
 ?>

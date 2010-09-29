@@ -1,5 +1,5 @@
 <?php
-header('Cache-Control: no-cache, must-revalidate');
+require_once("common.php");
 
 exec("sudo or-ipaddr", $results, $retval);
 

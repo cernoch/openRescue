@@ -1,7 +1,8 @@
 <?php
-header('Cache-Control: no-cache, must-revalidate');
+require_once("common.php");
 
 $path = $_SERVER["PATH_INFO"];
+
 if ($path == "") {
 	header("x", true, 415);
 	header('Content-type: text/plain');
@@ -9,8 +10,7 @@ if ($path == "") {
 	die;
 }
 
-$command = "sudo or-dir \"".($path)."\"";
-exec($command, $results, $retval);
+exec("sudo or-dir ".escSh($path), $results, $retval);
 
 if ($retval != 0) {
 	header("x", true, 500);
@@ -49,8 +49,9 @@ header("Expires: 0");
 header("Content-Transfer-Encoding: binary");
 header("Content-Type: {$file["mime"]}"); 
 header("Content-Length: {$file["size"]}");
-header("Content-Disposition: inline; filename=\"".urlencode($file["name"])."\"");
-passthru("sudo cat ".escapeshellarg("/mnt/".$path));
+header("Content-Disposition: inline; filename=".escHttp($file["name"]));
+
+passthru("sudo cat ".escSh("/mnt".$path));
 
 //header('Content-type: application/json');
 //echo json_encode($data);

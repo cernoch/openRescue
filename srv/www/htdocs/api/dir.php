@@ -1,5 +1,5 @@
 <?php
-header('Cache-Control: no-cache, must-revalidate');
+require_once("common.php");
 
 $data = json_decode(file_get_contents('php://input'));
 
@@ -10,8 +10,7 @@ if ($data == null) {
 	die;
 }
 
-$command = "sudo or-dir \"".($data->path)."\"";
-exec($command, $results, $retval);
+exec("sudo or-dir ".escSh($data->path), $results, $retval);
 
 if ($retval != 0) {
 	header("x", true, 500);

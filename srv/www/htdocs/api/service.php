@@ -1,5 +1,5 @@
 <?php
-header('Cache-Control: no-cache, must-revalidate');
+require_once("common.php");
 
 $data = json_decode(file_get_contents('php://input'));
 
@@ -8,7 +8,7 @@ $data = json_decode(file_get_contents('php://input'));
 if ($data != null)
 	foreach ($data as $service => $params) {
 		if (isset($params->command)) {
-			$command = "sudo or-service ".escapeshellcmd($service)." ".escapeshellcmd($params->command);
+			$command = "sudo or-service ".escSh($service)." ".escSh($params->command);
 			exec($command, $results, $retval);
 			// If the command failed, stop the script and show the result
 			if ($retval != 0) {

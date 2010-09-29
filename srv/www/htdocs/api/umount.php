@@ -1,5 +1,5 @@
 <?php
-header('Cache-Control: no-cache, must-revalidate');
+require_once("common.php");
 
 $data = json_decode(file_get_contents('php://input'));
 
@@ -10,8 +10,7 @@ if ($data == null) {
 	die;
 }
 
-$command = "sudo or-umount \"".escapeshellcmd($data->name)."\"";
-exec($command, $results, $retval);
+exec("sudo or-umount ".escSh($data->name), $results, $retval);
 
 if ($retval != 0) {
 	header("x", true, 500);
@@ -28,6 +27,8 @@ if (count($results) != 0) {
 }
 
 $data->stat = "offline";
+
+sleep(2); // Wait until all devices settle down...
 
 header('Content-type: application/json');
 echo json_encode($data);

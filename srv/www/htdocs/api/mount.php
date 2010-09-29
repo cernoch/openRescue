@@ -1,5 +1,5 @@
 <?php
-header('Cache-Control: no-cache, must-revalidate');
+require_once("common.php");
 
 $data = json_decode(file_get_contents('php://input'));
 
@@ -10,8 +10,7 @@ if ($data == null) {
 	die;
 }
 
-$command = "sudo or-mount \"".escapeshellcmd($data->path)."\"";
-exec($command, $results, $retval);
+exec("sudo or-mount ".escSh($data->path), $results, $retval);
 
 if ($retval != 0) {
 	header("x", true, 500);
@@ -30,6 +29,8 @@ if (count($results) != 1) {
 
 $data->name = $results[0];
 $data->stat = "mounted";
+
+sleep(2); // Wait until all devices settle down...
 
 header('Content-type: application/json');
 echo json_encode($data);
